@@ -1,6 +1,29 @@
 import { useState } from 'react'
 
-const initialValues = {
+type ProfileValues = {
+  firstName: string
+  ageYears: string
+  country: string
+  incomeBracket: string
+  relationshipStatus: string
+}
+
+type ProfileSubmitValues = {
+  firstName: string
+  ageYears: number
+  country: string
+  incomeBracket: string
+  relationshipStatus: string
+}
+
+type ProfileErrors = Partial<Record<keyof ProfileValues, string>>
+
+interface ProfileSetupFormProps {
+  onBack: () => void
+  onSubmitProfile: (profileValues: ProfileSubmitValues) => void
+}
+
+const initialValues: ProfileValues = {
   firstName: '',
   ageYears: '',
   country: '',
@@ -8,13 +31,16 @@ const initialValues = {
   relationshipStatus: '',
 }
 
-function ProfileSetupForm({ onBack, onSubmitProfile }) {
-  const [values, setValues] = useState(initialValues)
-  const [errors, setErrors] = useState({})
-  const [hasSubmitted, setHasSubmitted] = useState(false)
+function ProfileSetupForm({
+  onBack,
+  onSubmitProfile,
+}: ProfileSetupFormProps) {
+  const [values, setValues] = useState<ProfileValues>(initialValues)
+  const [errors, setErrors] = useState<ProfileErrors>({})
+  const [hasSubmitted, setHasSubmitted] = useState<boolean>(false)
 
-  const validate = (formValues) => {
-    const nextErrors = {}
+  const validate = (formValues: ProfileValues): ProfileErrors => {
+    const nextErrors: ProfileErrors = {}
     const ageNumber = Number(formValues.ageYears)
 
     if (formValues.firstName.trim() === '') {
@@ -46,10 +72,12 @@ function ProfileSetupForm({ onBack, onSubmitProfile }) {
     return nextErrors
   }
 
-  const handleChange = (event) => {
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = event.target
 
-    const nextValues = {
+    const nextValues: ProfileValues = {
       ...values,
       [name]: value,
     }
@@ -61,7 +89,7 @@ function ProfileSetupForm({ onBack, onSubmitProfile }) {
     }
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setHasSubmitted(true)
 

@@ -1,5 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import OnboardingRoute from './routes/OnboardingRoute.jsx'
+import OnboardingRoute from './routes/OnboardingRoute.tsx'
 import './App.css'
 
 function App() {

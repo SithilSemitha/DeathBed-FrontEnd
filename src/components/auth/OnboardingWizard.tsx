@@ -1,10 +1,24 @@
 import { useMemo, useState } from 'react'
-import ConsentScreen from './ConsentScreen.jsx'
-import ProfileSetupForm from './ProfileSetupForm.jsx'
+import ConsentScreen from './ConsentScreen'
+import ProfileSetupForm from './ProfileSetupForm'
+
+type ConsentValues = {
+  acceptTos: boolean
+  acceptPrivacyPolicy: boolean
+  contributeAnonymously: '' | 'yes' | 'no'
+}
+
+type ProfileValues = {
+  firstName: string
+  ageYears: number
+  country: string
+  incomeBracket: string
+  relationshipStatus: string
+}
 
 function OnboardingWizard() {
-  const [step, setStep] = useState(1)
-  const [consentValues, setConsentValues] = useState({
+  const [step, setStep] = useState<number>(1)
+  const [consentValues, setConsentValues] = useState<ConsentValues>({
     acceptTos: false,
     acceptPrivacyPolicy: false,
     contributeAnonymously: '',
@@ -18,14 +32,17 @@ function OnboardingWizard() {
     )
   }, [consentValues])
 
-  const handleConsentChange = (field, value) => {
+  const handleConsentChange = (
+    field: keyof ConsentValues,
+    value: ConsentValues[keyof ConsentValues],
+  ) => {
     setConsentValues((current) => ({
       ...current,
       [field]: value,
     }))
   }
 
-  const handleProfileSubmit = (profileValues) => {
+  const handleProfileSubmit = (profileValues: ProfileValues) => {
     const onboardingPayload = {
       consent: {
         acceptTos: consentValues.acceptTos,

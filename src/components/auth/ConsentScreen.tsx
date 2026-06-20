@@ -1,4 +1,24 @@
-function ConsentScreen({ values, onChange, onContinue, canContinue }) {
+type ConsentValues = {
+  acceptTos: boolean
+  acceptPrivacyPolicy: boolean
+  contributeAnonymously: '' | 'yes' | 'no'
+}
+
+type ConsentField = keyof ConsentValues
+
+interface ConsentScreenProps {
+  values: ConsentValues
+  onChange: (field: ConsentField, value: boolean | '' | 'yes' | 'no') => void
+  onContinue: () => void
+  canContinue: boolean
+}
+
+function ConsentScreen({
+  values,
+  onChange,
+  onContinue,
+  canContinue,
+}: ConsentScreenProps) {
   return (
     <section className="auth-card onboarding-card">
       <p className="step-label">Step 1 of 2</p>
@@ -79,9 +99,7 @@ function ConsentScreen({ values, onChange, onContinue, canContinue }) {
               name="contributeAnonymously"
               value="yes"
               checked={values.contributeAnonymously === 'yes'}
-              onChange={(event) =>
-                onChange('contributeAnonymously', event.target.value)
-              }
+              onChange={() => onChange('contributeAnonymously', 'yes')}
             />
             <span>Contribute my anonymised data to help others</span>
           </label>
@@ -92,20 +110,18 @@ function ConsentScreen({ values, onChange, onContinue, canContinue }) {
               name="contributeAnonymously"
               value="no"
               checked={values.contributeAnonymously === 'no'}
-              onChange={(event) =>
-                onChange('contributeAnonymously', event.target.value)
-              }
+              onChange={() => onChange('contributeAnonymously', 'no')}
             />
             <span>Don&apos;t contribute my data</span>
           </label>
         </fieldset>
       </div>
 
-      {!canContinue && (
+      {!canContinue ? (
         <p className="helper-text">
           Please make an explicit choice for each item.
         </p>
-      )}
+      ) : null}
 
       <div className="form-actions single-action">
         <button
