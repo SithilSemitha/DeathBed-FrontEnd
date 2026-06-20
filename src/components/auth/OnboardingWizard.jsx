@@ -25,6 +25,19 @@ function OnboardingWizard() {
     }))
   }
 
+  const handleProfileSubmit = (profileValues) => {
+    const onboardingPayload = {
+      consent: {
+        acceptTos: consentValues.acceptTos,
+        acceptPrivacyPolicy: consentValues.acceptPrivacyPolicy,
+        contributeAnonymously: consentValues.contributeAnonymously === 'yes',
+      },
+      profile: profileValues,
+    }
+
+    console.log('Full onboarding payload captured:', onboardingPayload)
+  }
+
   return (
     <section className="screen-shell">
       <div className="screen-backdrop" />
@@ -54,7 +67,10 @@ function OnboardingWizard() {
             canContinue={canContinueFromConsent}
           />
         ) : (
-          <ProfileSetupForm onBack={() => setStep(1)} />
+          <ProfileSetupForm
+            onBack={() => setStep(1)}
+            onSubmitProfile={handleProfileSubmit}
+          />
         )}
       </div>
     </section>

@@ -375,3 +375,19 @@ select.field-input {
     align-items: flex-start;
   }
 }
+
+.field-input-error {
+  border-color: #fb7185;
+  box-shadow: 0 0 0 4px rgba(251, 113, 133, 0.12);
+}
+
+.field-input-error:focus {
+  border-color: #fb7185;
+  box-shadow: 0 0 0 4px rgba(251, 113, 133, 0.16);
+}
+
+.field-error {
+  color: #fda4af;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
