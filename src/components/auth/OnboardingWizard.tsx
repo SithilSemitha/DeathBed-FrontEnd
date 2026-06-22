@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import ConsentScreen from './ConsentScreen'
 import ProfileSetupForm from './ProfileSetupForm'
+import { getSupabaseClient } from '../../lib/supabase'
 
 type ConsentValues = {
   acceptTos: boolean
@@ -23,6 +24,9 @@ function OnboardingWizard() {
     acceptPrivacyPolicy: false,
     contributeAnonymously: '',
   })
+  const [isSaving, setIsSaving] = useState<boolean>(false)
+  const [saveError, setSaveError] = useState<string>('')
+  const [saveSuccess, setSaveSuccess] = useState<string>('')
 
   const canContinueFromConsent = useMemo(() => {
     return (
@@ -42,17 +46,66 @@ function OnboardingWizard() {
     }))
   }
 
-  const handleProfileSubmit = (profileValues: ProfileValues) => {
-    const onboardingPayload = {
-      consent: {
-        acceptTos: consentValues.acceptTos,
-        acceptPrivacyPolicy: consentValues.acceptPrivacyPolicy,
-        contributeAnonymously: consentValues.contributeAnonymously === 'yes',
-      },
-      profile: profileValues,
+  const handleProfileSubmit = async (profileValues: ProfileValues) => {
+    setSaveError('')
+    setSaveSuccess('')
+
+    const supabase = getSupabaseClient()
+
+    if (!supabase) {
+      setSaveError(
+        'Supabase environment values are missing. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env.local.',
+      )
+      return
     }
 
-    console.log('Full onboarding payload captured:', onboardingPayload)
+    setIsSaving(true)
+
+    try {
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser()
+
+      if (userError || !user) {
+        setSaveError('You must be logged in to save your profile.')
+        return
+      }
+
+      const onboardingPayload = {
+        consent: {
+          acceptTos: consentValues.acceptTos,
+          acceptPrivacyPolicy: consentValues.acceptPrivacyPolicy,
+          contributeAnonymously: consentValues.contributeAnonymously === 'yes',
+        },
+        profile: profileValues,
+      }
+
+      const { error } = await supabase.from('profiles').upsert(
+        {
+          user_id: user.id,
+          first_name: profileValues.firstName,
+          age_years: profileValues.ageYears,
+          country: profileValues.country,
+          income_bracket: profileValues.incomeBracket,
+          relationship_status: profileValues.relationshipStatus,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'user_id' },
+      )
+
+      if (error) {
+        setSaveError(error.message)
+        return
+      }
+
+      console.log('Full onboarding payload captured:', onboardingPayload)
+      setSaveSuccess('Profile saved successfully.')
+    } catch {
+      setSaveError('Could not save profile right now. Please try again.')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -87,6 +140,9 @@ function OnboardingWizard() {
           <ProfileSetupForm
             onBack={() => setStep(1)}
             onSubmitProfile={handleProfileSubmit}
+            isSaving={isSaving}
+            saveError={saveError}
+            saveSuccess={saveSuccess}
           />
         )}
       </div>

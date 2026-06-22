@@ -391,3 +391,25 @@ select.field-input {
   font-size: 0.88rem;
   line-height: 1.4;
 }
+
+
+.status-banner {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border-soft);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.status-banner-error {
+  background: rgba(127, 29, 29, 0.22);
+  border-color: rgba(251, 113, 133, 0.35);
+  color: #fecdd3;
+}
+
+.status-banner-success {
+  background: rgba(20, 83, 45, 0.22);
+  border-color: rgba(74, 222, 128, 0.35);
+  color: #bbf7d0;
+}

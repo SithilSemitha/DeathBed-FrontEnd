@@ -20,7 +20,10 @@ type ProfileErrors = Partial<Record<keyof ProfileValues, string>>
 
 interface ProfileSetupFormProps {
   onBack: () => void
-  onSubmitProfile: (profileValues: ProfileSubmitValues) => void
+  onSubmitProfile: (profileValues: ProfileSubmitValues) => void | Promise<void>
+  isSaving: boolean
+  saveError: string
+  saveSuccess: string
 }
 
 const initialValues: ProfileValues = {
@@ -34,6 +37,9 @@ const initialValues: ProfileValues = {
 function ProfileSetupForm({
   onBack,
   onSubmitProfile,
+  isSaving,
+  saveError,
+  saveSuccess,
 }: ProfileSetupFormProps) {
   const [values, setValues] = useState<ProfileValues>(initialValues)
   const [errors, setErrors] = useState<ProfileErrors>({})
@@ -89,7 +95,7 @@ function ProfileSetupForm({
     }
   }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setHasSubmitted(true)
 
@@ -100,7 +106,7 @@ function ProfileSetupForm({
       return
     }
 
-    onSubmitProfile({
+    await onSubmitProfile({
       firstName: values.firstName.trim(),
       ageYears: Number(values.ageYears),
       country: values.country,
@@ -118,6 +124,16 @@ function ProfileSetupForm({
         This helps us match you with statistically similar people.
       </p>
 
+      {saveError ? (
+        <div className="status-banner status-banner-error">{saveError}</div>
+      ) : null}
+
+      {saveSuccess ? (
+        <div className="status-banner status-banner-success">
+          {saveSuccess}
+        </div>
+      ) : null}
+
       <div className="form-grid">
         <label className="field-group">
           <span className="field-label">First name</span>
@@ -128,6 +144,7 @@ function ProfileSetupForm({
             value={values.firstName}
             onChange={handleChange}
             placeholder="Enter your first name"
+            disabled={isSaving}
           />
           {errors.firstName ? (
             <span className="field-error">{errors.firstName}</span>
@@ -145,6 +162,7 @@ function ProfileSetupForm({
             min="13"
             max="120"
             placeholder="Enter your age"
+            disabled={isSaving}
           />
           {errors.ageYears ? (
             <span className="field-error">{errors.ageYears}</span>
@@ -158,6 +176,7 @@ function ProfileSetupForm({
             name="country"
             value={values.country}
             onChange={handleChange}
+            disabled={isSaving}
           >
             <option value="" disabled>
               Select your country
@@ -180,6 +199,7 @@ function ProfileSetupForm({
             name="incomeBracket"
             value={values.incomeBracket}
             onChange={handleChange}
+            disabled={isSaving}
           >
             <option value="" disabled>
               Select your income bracket
@@ -203,6 +223,7 @@ function ProfileSetupForm({
             name="relationshipStatus"
             value={values.relationshipStatus}
             onChange={handleChange}
+            disabled={isSaving}
           >
             <option value="" disabled>
               Select your relationship status
@@ -225,12 +246,13 @@ function ProfileSetupForm({
           type="button"
           className="button button-secondary"
           onClick={onBack}
+          disabled={isSaving}
         >
           Back
         </button>
 
-        <button type="submit" className="button button-primary">
-          Save Profile
+        <button type="submit" className="button button-primary" disabled={isSaving}>
+          {isSaving ? 'Saving...' : 'Save Profile'}
         </button>
       </div>
     </form>
