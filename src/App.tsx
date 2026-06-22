@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import OnboardingRoute from './routes/OnboardingRoute.tsx'
+import OnboardingRoute from './routes/OnboardingRoute'
+import DecisionInputRoute from './routes/DecisionInputRoute'
 import './App.css'
 
 function App() {
@@ -8,6 +9,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/onboarding" replace />} />
         <Route path="/onboarding" element={<OnboardingRoute />} />
+        <Route path="/decisions/new" element={<DecisionInputRoute />} />
       </Routes>
     </BrowserRouter>
   )

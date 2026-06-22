@@ -413,3 +413,14 @@ select.field-input {
   border-color: rgba(74, 222, 128, 0.35);
   color: #bbf7d0;
 }
+
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.button-link:hover {
+  text-decoration: none;
+}

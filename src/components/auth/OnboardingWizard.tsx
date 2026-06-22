@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import ConsentScreen from './ConsentScreen'
 import ProfileSetupForm from './ProfileSetupForm'
 import { getSupabaseClient } from '../../lib/supabase'
@@ -17,7 +18,18 @@ type ProfileValues = {
   relationshipStatus: string
 }
 
+type OnboardingPayload = {
+  consent: {
+    acceptTos: boolean
+    acceptPrivacyPolicy: boolean
+    contributeAnonymously: boolean
+  }
+  profile: ProfileValues
+}
+
 function OnboardingWizard() {
+  const navigate = useNavigate()
+
   const [step, setStep] = useState<number>(1)
   const [consentValues, setConsentValues] = useState<ConsentValues>({
     acceptTos: false,
@@ -46,16 +58,34 @@ function OnboardingWizard() {
     }))
   }
 
+  const persistOnboardingPayload = (payload: OnboardingPayload) => {
+    localStorage.setItem('deathbed.onboarding.payload', JSON.stringify(payload))
+  }
+
   const handleProfileSubmit = async (profileValues: ProfileValues) => {
     setSaveError('')
     setSaveSuccess('')
 
+    const onboardingPayload: OnboardingPayload = {
+      consent: {
+        acceptTos: consentValues.acceptTos,
+        acceptPrivacyPolicy: consentValues.acceptPrivacyPolicy,
+        contributeAnonymously: consentValues.contributeAnonymously === 'yes',
+      },
+      profile: profileValues,
+    }
+
     const supabase = getSupabaseClient()
 
     if (!supabase) {
-      setSaveError(
-        'Supabase environment values are missing. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env.local.',
-      )
+      persistOnboardingPayload(onboardingPayload)
+      console.log('Full onboarding payload captured:', onboardingPayload)
+      setSaveSuccess('Profile saved locally for development. Redirecting...')
+
+      window.setTimeout(() => {
+        navigate('/decisions/new')
+      }, 900)
+
       return
     }
 
@@ -70,15 +100,6 @@ function OnboardingWizard() {
       if (userError || !user) {
         setSaveError('You must be logged in to save your profile.')
         return
-      }
-
-      const onboardingPayload = {
-        consent: {
-          acceptTos: consentValues.acceptTos,
-          acceptPrivacyPolicy: consentValues.acceptPrivacyPolicy,
-          contributeAnonymously: consentValues.contributeAnonymously === 'yes',
-        },
-        profile: profileValues,
       }
 
       const { error } = await supabase.from('profiles').upsert(
@@ -99,8 +120,13 @@ function OnboardingWizard() {
         return
       }
 
+      persistOnboardingPayload(onboardingPayload)
       console.log('Full onboarding payload captured:', onboardingPayload)
-      setSaveSuccess('Profile saved successfully.')
+      setSaveSuccess('Profile saved successfully. Redirecting...')
+
+      window.setTimeout(() => {
+        navigate('/decisions/new')
+      }, 900)
     } catch {
       setSaveError('Could not save profile right now. Please try again.')
     } finally {
