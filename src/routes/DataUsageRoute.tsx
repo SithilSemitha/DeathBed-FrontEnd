@@ -57,6 +57,49 @@ function DataUsageRoute() {
             </article>
           </div>
 
+          <div className="usage-purpose-block">
+            <h2 className="usage-purpose-heading">Why we use this information</h2>
+
+            <div className="usage-purpose-list">
+              <article className="usage-purpose-card">
+                <h3 className="usage-purpose-title">Personalise your experience</h3>
+                <p className="usage-purpose-copy">
+                  Your profile details help the app tailor future experiences so
+                  the product feels relevant to your real life context instead of
+                  showing generic results.
+                </p>
+              </article>
+
+              <article className="usage-purpose-card">
+                <h3 className="usage-purpose-title">Match you with similar people</h3>
+                <p className="usage-purpose-copy">
+                  Information like age, country, income bracket, and
+                  relationship status helps the system compare your situation
+                  with people whose decision paths are more statistically
+                  similar to yours.
+                </p>
+              </article>
+
+              <article className="usage-purpose-card">
+                <h3 className="usage-purpose-title">Save your progress</h3>
+                <p className="usage-purpose-copy">
+                  Account and saved activity data allow you to come back later
+                  and continue your decision journey instead of starting again
+                  from the beginning.
+                </p>
+              </article>
+
+              <article className="usage-purpose-card">
+                <h3 className="usage-purpose-title">Support future analysis features</h3>
+                <p className="usage-purpose-copy">
+                  Decision-related inputs are used to support future features
+                  like personalised analysis, reflection tools, and matched
+                  outcome experiences inside the app.
+                </p>
+              </article>
+            </div>
+          </div>
+
           <div className="form-actions dual-actions">
             <Link className="button button-secondary button-link" to="/onboarding">
               Back to onboarding

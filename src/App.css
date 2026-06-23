@@ -359,12 +359,12 @@ select.field-input {
     align-items: flex-start;
   }
 
-  .dual-actions,
-  .single-action {
-    display: grid;
-    grid-template-columns: 1fr;
-    justify-content: stretch;
-  }
+  .dual-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
 
   .button {
     width: 100%;
@@ -419,6 +419,8 @@ select.field-input {
   align-items: center;
   justify-content: center;
   text-decoration: none;
+  white-space: nowrap;
+  min-width: 180px;
 }
 
 .button-link:hover {
@@ -463,6 +465,43 @@ select.field-input {
 }
 
 .data-category-copy {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+
+.usage-purpose-block {
+  margin-top: 28px;
+}
+
+.usage-purpose-heading {
+  margin: 0 0 16px;
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.usage-purpose-list {
+  display: grid;
+  gap: 16px;
+}
+
+.usage-purpose-card {
+  padding: 18px;
+  border: 1px solid var(--border-soft);
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.48);
+}
+
+.usage-purpose-title {
+  margin: 0 0 8px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.usage-purpose-copy {
   margin: 0;
   color: var(--text-secondary);
   line-height: 1.6;
