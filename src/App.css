@@ -642,3 +642,7 @@ select.field-input {
   justify-content: flex-end;
   margin-top: -4px;
 }
+
+.auth-page-footer {
+  margin-top: 8px;
+}
