@@ -581,3 +581,47 @@ select.field-input {
   text-decoration: none;
   border-color: var(--accent);
 }
+
+.acknowledgement-block {
+  margin-top: 28px;
+}
+
+.acknowledgement-heading {
+  margin: 0 0 16px;
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.acknowledgement-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--border-soft);
+  border-radius: 18px;
+  background: rgba(30, 41, 59, 0.45);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.acknowledgement-copy {
+  color: var(--text-primary);
+}
+
+.acknowledgement-helper {
+  margin: 12px 0 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.acknowledgement-success {
+  margin: 12px 0 0;
+  color: #bbf7d0;
+  line-height: 1.5;
+}
+
+.button-disabled {
+  opacity: 0.55;
+  pointer-events: auto;
+}

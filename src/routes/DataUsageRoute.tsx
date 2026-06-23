@@ -1,6 +1,26 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+const DATA_USAGE_ACK_KEY = 'deathbed.dataUsageAcknowledged'
+
 function DataUsageRoute() {
+  const [isAcknowledged, setIsAcknowledged] = useState<boolean>(false)
+  const [hasHydrated, setHasHydrated] = useState<boolean>(false)
+
+  useEffect(() => {
+    const storedValue = localStorage.getItem(DATA_USAGE_ACK_KEY)
+    setIsAcknowledged(storedValue === 'true')
+    setHasHydrated(true)
+  }, [])
+
+  const handleAcknowledgementChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const checked = event.target.checked
+    setIsAcknowledged(checked)
+    localStorage.setItem(DATA_USAGE_ACK_KEY, String(checked))
+  }
+
   return (
     <section className="screen-shell">
       <div className="screen-backdrop" />
@@ -138,7 +158,12 @@ function DataUsageRoute() {
               </p>
 
               <div className="policy-links-row">
-                <a href="/tos" target="_blank" rel="noreferrer" className="policy-link-pill">
+                <a
+                  href="/tos"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="policy-link-pill"
+                >
                   Terms of Service
                 </a>
                 <a
@@ -153,12 +178,49 @@ function DataUsageRoute() {
             </div>
           </div>
 
+          <div className="acknowledgement-block">
+            <h2 className="acknowledgement-heading">Acknowledge this information</h2>
+
+            <label className="acknowledgement-card" htmlFor="data-usage-acknowledged">
+              <input
+                id="data-usage-acknowledged"
+                className="option-input"
+                type="checkbox"
+                checked={isAcknowledged}
+                onChange={handleAcknowledgementChange}
+              />
+              <span className="acknowledgement-copy">
+                I understand how my data may be used within DeathBed and I have
+                reviewed the information shown on this page.
+              </span>
+            </label>
+
+            {hasHydrated && isAcknowledged ? (
+              <p className="acknowledgement-success">
+                Your acknowledgement has been saved locally in this browser.
+              </p>
+            ) : (
+              <p className="acknowledgement-helper">
+                You must acknowledge this section before continuing.
+              </p>
+            )}
+          </div>
+
           <div className="form-actions dual-actions">
             <Link className="button button-secondary button-link" to="/onboarding">
               Back to onboarding
             </Link>
 
-            <Link className="button button-primary button-link" to="/decisions/new">
+            <Link
+              className={`button button-primary button-link ${!isAcknowledged ? 'button-disabled' : ''}`}
+              to={isAcknowledged ? '/decisions/new' : '#'}
+              aria-disabled={!isAcknowledged}
+              onClick={(event) => {
+                if (!isAcknowledged) {
+                  event.preventDefault()
+                }
+              }}
+            >
               Continue
             </Link>
           </div>
