@@ -441,3 +441,29 @@ select.field-input {
 .inline-link:hover {
   text-decoration: underline;
 }
+
+.data-category-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.data-category-card {
+  padding: 18px;
+  border: 1px solid var(--border-soft);
+  border-radius: 18px;
+  background: rgba(30, 41, 59, 0.45);
+}
+
+.data-category-title {
+  margin: 0 0 8px;
+  color: var(--text-primary);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.data-category-copy {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}

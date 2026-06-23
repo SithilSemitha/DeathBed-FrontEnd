@@ -23,6 +23,40 @@ function DataUsageRoute() {
             </p>
           </div>
 
+          <div className="data-category-grid">
+            <article className="data-category-card">
+              <h2 className="data-category-title">Profile information</h2>
+              <p className="data-category-copy">
+                Basic onboarding details such as your age, country, income
+                bracket, and relationship status.
+              </p>
+            </article>
+
+            <article className="data-category-card">
+              <h2 className="data-category-title">Account information</h2>
+              <p className="data-category-copy">
+                Sign-up and login details linked to your account, such as your
+                email address and authentication status.
+              </p>
+            </article>
+
+            <article className="data-category-card">
+              <h2 className="data-category-title">Decision inputs</h2>
+              <p className="data-category-copy">
+                The life decisions, reflections, and related inputs you provide
+                while using the product.
+              </p>
+            </article>
+
+            <article className="data-category-card">
+              <h2 className="data-category-title">Saved activity</h2>
+              <p className="data-category-copy">
+                Information connected to your personal app journey, such as
+                saved analyses, journals, and future decision history.
+              </p>
+            </article>
+          </div>
+
           <div className="form-actions dual-actions">
             <Link className="button button-secondary button-link" to="/onboarding">
               Back to onboarding
