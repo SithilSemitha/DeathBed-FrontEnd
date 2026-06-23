@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 type ConsentValues = {
   acceptTos: boolean
   acceptPrivacyPolicy: boolean
@@ -53,6 +55,13 @@ function ConsentScreen({
         </ul>
       </div>
 
+      <p className="helper-link-row">
+        Want more detail?{' '}
+        <Link className="inline-link" to="/data-usage">
+          View our data usage section
+        </Link>
+      </p>
+
       <div className="consent-section">
         <div className="option-row">
           <input
@@ -99,7 +108,9 @@ function ConsentScreen({
               name="contributeAnonymously"
               value="yes"
               checked={values.contributeAnonymously === 'yes'}
-              onChange={() => onChange('contributeAnonymously', 'yes')}
+              onChange={(event) =>
+                onChange('contributeAnonymously', event.target.value as 'yes')
+              }
             />
             <span>Contribute my anonymised data to help others</span>
           </label>
@@ -110,7 +121,9 @@ function ConsentScreen({
               name="contributeAnonymously"
               value="no"
               checked={values.contributeAnonymously === 'no'}
-              onChange={() => onChange('contributeAnonymously', 'no')}
+              onChange={(event) =>
+                onChange('contributeAnonymously', event.target.value as 'no')
+              }
             />
             <span>Don&apos;t contribute my data</span>
           </label>

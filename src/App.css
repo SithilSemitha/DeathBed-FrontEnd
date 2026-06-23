@@ -424,3 +424,20 @@ select.field-input {
 .button-link:hover {
   text-decoration: none;
 }
+
+.helper-link-row {
+  margin: 20px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.inline-link {
+  color: #c4b5fd;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.inline-link:hover {
+  text-decoration: underline;
+}
