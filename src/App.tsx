@@ -2,6 +2,8 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import OnboardingRoute from './routes/OnboardingRoute'
 import DecisionInputRoute from './routes/DecisionInputRoute'
 import DataUsageRoute from './routes/DataUsageRoute'
+import LoginRoute from './routes/LoginRoute'
+import ForgotPasswordRoute from './routes/ForgotPasswordRoute'
 import './App.css'
 
 function App() {
@@ -11,6 +13,8 @@ function App() {
         <Route path="/" element={<Navigate to="/onboarding" replace />} />
         <Route path="/onboarding" element={<OnboardingRoute />} />
         <Route path="/data-usage" element={<DataUsageRoute />} />
+        <Route path="/login" element={<LoginRoute />} />
+        <Route path="/forgot-password" element={<ForgotPasswordRoute />} />
         <Route path="/decisions/new" element={<DecisionInputRoute />} />
       </Routes>
     </BrowserRouter>
