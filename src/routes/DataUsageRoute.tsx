@@ -100,6 +100,59 @@ function DataUsageRoute() {
             </div>
           </div>
 
+          <div className="policy-info-block">
+            <h2 className="policy-info-heading">Consent and policy information</h2>
+
+            <div className="policy-info-list">
+              <article className="policy-info-card">
+                <h3 className="policy-info-title">Explicit consent is required</h3>
+                <p className="policy-info-copy">
+                  During onboarding, users must actively choose their consent
+                  options before continuing. The app does not treat silence or
+                  skipped fields as consent.
+                </p>
+              </article>
+
+              <article className="policy-info-card">
+                <h3 className="policy-info-title">You choose anonymised contribution</h3>
+                <p className="policy-info-copy">
+                  Users can choose whether their data may contribute in an
+                  anonymised form to future shared insight features. This choice
+                  is presented clearly during onboarding.
+                </p>
+              </article>
+
+              <article className="policy-info-card">
+                <h3 className="policy-info-title">Terms and Privacy are part of account access</h3>
+                <p className="policy-info-copy">
+                  The onboarding flow includes clear acknowledgement of the Terms
+                  of Service and Privacy Policy so users know the rules and data
+                  expectations before proceeding.
+                </p>
+              </article>
+            </div>
+
+            <div className="policy-links-panel">
+              <p className="policy-links-copy">
+                Policy entry points currently shown in onboarding:
+              </p>
+
+              <div className="policy-links-row">
+                <a href="/tos" target="_blank" rel="noreferrer" className="policy-link-pill">
+                  Terms of Service
+                </a>
+                <a
+                  href="/privacy"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="policy-link-pill"
+                >
+                  Privacy Policy
+                </a>
+              </div>
+            </div>
+          </div>
+
           <div className="form-actions dual-actions">
             <Link className="button button-secondary button-link" to="/onboarding">
               Back to onboarding
