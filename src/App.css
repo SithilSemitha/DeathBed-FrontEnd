@@ -897,3 +897,24 @@ select.field-input {
     grid-template-columns: 1fr;
   }
 }
+
+.active-filters-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.active-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: rgba(30, 41, 59, 0.92);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
