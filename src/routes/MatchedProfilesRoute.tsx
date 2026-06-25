@@ -67,6 +67,25 @@ const mockProfiles: MatchProfile[] = [
 function MatchedProfilesRoute() {
   const [filters, setFilters] = useState<FilterValues>(initialFilters)
 
+  const ageRangeError = useMemo(() => {
+    if (!filters.minAge || !filters.maxAge) {
+      return ''
+    }
+
+    const minAge = Number(filters.minAge)
+    const maxAge = Number(filters.maxAge)
+
+    if (!Number.isFinite(minAge) || !Number.isFinite(maxAge)) {
+      return ''
+    }
+
+    if (minAge > maxAge) {
+      return 'Minimum age cannot exceed maximum age.'
+    }
+
+    return ''
+  }, [filters.minAge, filters.maxAge])
+
   const activeFilterSummary = useMemo(() => {
     const summary: string[] = []
 
@@ -147,7 +166,7 @@ function MatchedProfilesRoute() {
               <label className="field-group">
                 <span className="field-label">Minimum age</span>
                 <input
-                  className="field-input"
+                  className={`field-input ${ageRangeError ? 'field-input-error' : ''}`}
                   type="number"
                   name="minAge"
                   min="13"
@@ -161,7 +180,7 @@ function MatchedProfilesRoute() {
               <label className="field-group">
                 <span className="field-label">Maximum age</span>
                 <input
-                  className="field-input"
+                  className={`field-input ${ageRangeError ? 'field-input-error' : ''}`}
                   type="number"
                   name="maxAge"
                   min="13"
@@ -170,6 +189,13 @@ function MatchedProfilesRoute() {
                   value={filters.maxAge}
                   onChange={handleChange}
                 />
+                {ageRangeError ? (
+                  <span className="field-error">{ageRangeError}</span>
+                ) : (
+                  <span className="field-helper">
+                    Enter an age range between 13 and 120.
+                  </span>
+                )}
               </label>
 
               <label className="field-group">
@@ -215,7 +241,11 @@ function MatchedProfilesRoute() {
                 >
                   Reset Filters
                 </button>
-                <button type="button" className="button button-primary">
+                <button
+                  type="button"
+                  className="button button-primary"
+                  disabled={Boolean(ageRangeError)}
+                >
                   Apply Filters
                 </button>
               </div>
