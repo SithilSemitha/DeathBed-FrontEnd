@@ -1,66 +1,58 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { getSupabaseClient } from '../lib/supabase'
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { forgotPassword } from "../lib/api";
 
 function isValidEmail(email: string) {
-  return /\S+@\S+\.\S+/.test(email)
+  return /\S+@\S+\.\S+/.test(email);
 }
 
 function ForgotPasswordRoute() {
-  const [email, setEmail] = useState<string>('')
-  const [emailError, setEmailError] = useState<string>('')
-  const [requestError, setRequestError] = useState<string>('')
-  const [requestSuccess, setRequestSuccess] = useState<string>('')
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const [email, setEmail] = useState<string>("");
+  const [emailError, setEmailError] = useState<string>("");
+  const [requestError, setRequestError] = useState<string>("");
+  const [requestSuccess, setRequestSuccess] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setEmailError('')
-    setRequestError('')
-    setRequestSuccess('')
+    event.preventDefault();
+    setEmailError("");
+    setRequestError("");
+    setRequestSuccess("");
 
-    const trimmedEmail = email.trim()
+    const trimmedEmail = email.trim();
 
     if (!trimmedEmail) {
-      setEmailError('Please enter your email address')
-      return
+      setEmailError("Please enter your email address");
+      return;
     }
 
     if (!isValidEmail(trimmedEmail)) {
-      setEmailError('Please enter a valid email address')
-      return
+      setEmailError("Please enter a valid email address");
+      return;
     }
 
-    const supabase = getSupabaseClient()
+    const apiBase = import.meta.env.VITE_API_BASE;
 
-    if (!supabase) {
-      setRequestError(
-        'Supabase environment values are missing. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env.local.',
-      )
-      return
+    if (!apiBase) {
+      setRequestError("API base URL is not configured. Reset link not sent.");
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(trimmedEmail, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      })
-
-      if (error) {
-        setRequestError(error.message)
-        return
-      }
-
-      setRequestSuccess(
-        'If that email exists, a reset link has been sent.',
-      )
-    } catch {
-      setRequestError('Could not request a password reset right now. Please try again.')
+      await forgotPassword(trimmedEmail);
+      setRequestSuccess("If that email exists, a reset link has been sent.");
+    } catch (err: any) {
+      setRequestError(
+        err?.response?.data?.error ||
+          err?.message ||
+          "Could not request a password reset right now. Please try again.",
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <section className="screen-shell">
@@ -78,7 +70,9 @@ function ForgotPasswordRoute() {
           </p>
 
           {requestError ? (
-            <div className="status-banner status-banner-error">{requestError}</div>
+            <div className="status-banner status-banner-error">
+              {requestError}
+            </div>
           ) : null}
 
           {requestSuccess ? (
@@ -91,7 +85,7 @@ function ForgotPasswordRoute() {
             <label className="field-group">
               <span className="field-label">Email</span>
               <input
-                className={`field-input ${emailError ? 'field-input-error' : ''}`}
+                className={`field-input ${emailError ? "field-input-error" : ""}`}
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
@@ -108,7 +102,7 @@ function ForgotPasswordRoute() {
               className="button button-primary"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Sending reset link...' : 'Request Reset Link'}
+              {isSubmitting ? "Sending reset link..." : "Request Reset Link"}
             </button>
 
             <div className="form-actions single-action auth-page-footer">
@@ -120,7 +114,7 @@ function ForgotPasswordRoute() {
         </div>
       </div>
     </section>
-  )
+  );
 }
 
-export default ForgotPasswordRoute
+export default ForgotPasswordRoute;

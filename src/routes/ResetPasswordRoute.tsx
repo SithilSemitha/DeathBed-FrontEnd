@@ -1,93 +1,91 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { getSupabaseClient } from '../lib/supabase'
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { resetPassword } from "../lib/api";
 
 function ResetPasswordRoute() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const [password, setPassword] = useState<string>('')
-  const [confirmPassword, setConfirmPassword] = useState<string>('')
-  const [passwordError, setPasswordError] = useState<string>('')
-  const [confirmPasswordError, setConfirmPasswordError] = useState<string>('')
-  const [requestError, setRequestError] = useState<string>('')
-  const [requestSuccess, setRequestSuccess] = useState<string>('')
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<string>("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
+  const [requestError, setRequestError] = useState<string>("");
+  const [requestSuccess, setRequestSuccess] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+    event.preventDefault();
 
-    setPasswordError('')
-    setConfirmPasswordError('')
-    setRequestError('')
-    setRequestSuccess('')
+    setPasswordError("");
+    setConfirmPasswordError("");
+    setRequestError("");
+    setRequestSuccess("");
 
-    const trimmedPassword = password.trim()
-    const trimmedConfirmPassword = confirmPassword.trim()
+    const trimmedPassword = password.trim();
+    const trimmedConfirmPassword = confirmPassword.trim();
 
     if (!trimmedPassword) {
-      setPasswordError('Please enter a new password')
-      return
+      setPasswordError("Please enter a new password");
+      return;
     }
 
     if (trimmedPassword.length < 8) {
-      setPasswordError('Password must be at least 8 characters long')
-      return
+      setPasswordError("Password must be at least 8 characters long");
+      return;
     }
 
     if (!trimmedConfirmPassword) {
-      setConfirmPasswordError('Please confirm your new password')
-      return
+      setConfirmPasswordError("Please confirm your new password");
+      return;
     }
 
     if (trimmedPassword !== trimmedConfirmPassword) {
-      setConfirmPasswordError('Passwords do not match')
-      return
+      setConfirmPasswordError("Passwords do not match");
+      return;
     }
 
-    const supabase = getSupabaseClient()
+    const extractAccessToken = () => {
+      // Try hash fragment first (#access_token=...)
+      const hash = window.location.hash || "";
+      const hashMatch = hash.match(/access_token=([^&]+)/);
+      if (hashMatch) return decodeURIComponent(hashMatch[1]);
 
-    if (!supabase) {
+      // Fallback to query param
+      const params = new URLSearchParams(window.location.search);
+      return params.get("access_token");
+    };
+
+    const accessToken = extractAccessToken();
+
+    if (!accessToken) {
       setRequestError(
-        'Supabase environment values are missing. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env.local.',
-      )
-      return
+        "Open this page using the password reset link sent to your email.",
+      );
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser()
+      await resetPassword(accessToken, trimmedPassword);
 
-      if (userError || !user) {
-        setRequestError(
-          'Open this page using the password reset link sent to your email.',
-        )
-        return
-      }
-
-      const { error } = await supabase.auth.updateUser({
-        password: trimmedPassword,
-      })
-
-      if (error) {
-        setRequestError(error.message)
-        return
-      }
-
-      setRequestSuccess('Password updated successfully. Redirecting to login...')
+      setRequestSuccess(
+        "Password updated successfully. Redirecting to login...",
+      );
 
       window.setTimeout(() => {
-        navigate('/login')
-      }, 1200)
-    } catch {
-      setRequestError('Could not update your password right now. Please try again.')
+        navigate("/login");
+      }, 1200);
+    } catch (err: any) {
+      setRequestError(
+        err?.response?.data?.error ||
+          err?.message ||
+          "Could not update your password right now. Please try again.",
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <section className="screen-shell">
@@ -105,7 +103,9 @@ function ResetPasswordRoute() {
           </p>
 
           {requestError ? (
-            <div className="status-banner status-banner-error">{requestError}</div>
+            <div className="status-banner status-banner-error">
+              {requestError}
+            </div>
           ) : null}
 
           {requestSuccess ? (
@@ -118,7 +118,7 @@ function ResetPasswordRoute() {
             <label className="field-group">
               <span className="field-label">New password</span>
               <input
-                className={`field-input ${passwordError ? 'field-input-error' : ''}`}
+                className={`field-input ${passwordError ? "field-input-error" : ""}`}
                 type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
@@ -133,7 +133,7 @@ function ResetPasswordRoute() {
             <label className="field-group">
               <span className="field-label">Confirm new password</span>
               <input
-                className={`field-input ${confirmPasswordError ? 'field-input-error' : ''}`}
+                className={`field-input ${confirmPasswordError ? "field-input-error" : ""}`}
                 type="password"
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
@@ -150,7 +150,7 @@ function ResetPasswordRoute() {
               className="button button-primary"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Updating password...' : 'Update Password'}
+              {isSubmitting ? "Updating password..." : "Update Password"}
             </button>
 
             <div className="form-actions single-action auth-page-footer">
@@ -162,7 +162,7 @@ function ResetPasswordRoute() {
         </div>
       </div>
     </section>
-  )
+  );
 }
 
-export default ResetPasswordRoute
+export default ResetPasswordRoute;
