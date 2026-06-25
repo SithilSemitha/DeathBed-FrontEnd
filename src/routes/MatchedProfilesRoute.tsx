@@ -1,72 +1,19 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-
-type MatchProfile = {
-  id: string
-  label: string
-  age: number
-  countryCode: string
-  countryLabel: string
-  incomeBracket: string
-  incomeLabel: string
-}
-
-type FilterValues = {
-  minAge: string
-  maxAge: string
-  country: string
-  incomeBracket: string
-}
-
-const initialFilters: FilterValues = {
-  minAge: '',
-  maxAge: '',
-  country: '',
-  incomeBracket: '',
-}
-
-const mockProfiles: MatchProfile[] = [
-  {
-    id: 'a',
-    label: 'Person A',
-    age: 27,
-    countryCode: 'LK',
-    countryLabel: 'Sri Lanka',
-    incomeBracket: '25k_50k',
-    incomeLabel: '$25k - $50k',
-  },
-  {
-    id: 'b',
-    label: 'Person B',
-    age: 31,
-    countryCode: 'GB',
-    countryLabel: 'United Kingdom',
-    incomeBracket: '50k_100k',
-    incomeLabel: '$50k - $100k',
-  },
-  {
-    id: 'c',
-    label: 'Person C',
-    age: 24,
-    countryCode: 'CA',
-    countryLabel: 'Canada',
-    incomeBracket: 'under_25k',
-    incomeLabel: 'Under $25k',
-  },
-  {
-    id: 'd',
-    label: 'Person D',
-    age: 29,
-    countryCode: 'SE',
-    countryLabel: 'Sweden',
-    incomeBracket: '100k_200k',
-    incomeLabel: '$100k - $200k',
-  },
-]
+import {
+  buildActiveFilterSummary,
+  countryOptions,
+  filterProfiles,
+  incomeOptions,
+  initialMatchFilters,
+  mockProfiles,
+  type MatchFilters,
+} from '../lib/matches'
 
 function MatchedProfilesRoute() {
-  const [filters, setFilters] = useState<FilterValues>(initialFilters)
-  const [appliedFilters, setAppliedFilters] = useState<FilterValues>(initialFilters)
+  const [filters, setFilters] = useState<MatchFilters>(initialMatchFilters)
+  const [appliedFilters, setAppliedFilters] =
+    useState<MatchFilters>(initialMatchFilters)
 
   const ageRangeError = useMemo(() => {
     if (!filters.minAge || !filters.maxAge) {
@@ -88,56 +35,11 @@ function MatchedProfilesRoute() {
   }, [filters.minAge, filters.maxAge])
 
   const activeFilterSummary = useMemo(() => {
-    const summary: string[] = []
-
-    if (appliedFilters.minAge) summary.push(`Min age: ${appliedFilters.minAge}`)
-    if (appliedFilters.maxAge) summary.push(`Max age: ${appliedFilters.maxAge}`)
-
-    if (appliedFilters.country) {
-      const countryMap: Record<string, string> = {
-        LK: 'Sri Lanka',
-        SE: 'Sweden',
-        GB: 'United Kingdom',
-        CA: 'Canada',
-        US: 'United States',
-      }
-
-      summary.push(`Country: ${countryMap[appliedFilters.country]}`)
-    }
-
-    if (appliedFilters.incomeBracket) {
-      const incomeMap: Record<string, string> = {
-        under_25k: 'Under $25k',
-        '25k_50k': '$25k - $50k',
-        '50k_100k': '$50k - $100k',
-        '100k_200k': '$100k - $200k',
-        '200k_plus': '$200k+',
-        prefer_not_say: 'Prefer not to say',
-      }
-
-      summary.push(`Income: ${incomeMap[appliedFilters.incomeBracket]}`)
-    }
-
-    return summary
+    return buildActiveFilterSummary(appliedFilters)
   }, [appliedFilters])
 
   const filteredProfiles = useMemo(() => {
-    return mockProfiles.filter((profile) => {
-      const minAgeMatches =
-        !appliedFilters.minAge || profile.age >= Number(appliedFilters.minAge)
-
-      const maxAgeMatches =
-        !appliedFilters.maxAge || profile.age <= Number(appliedFilters.maxAge)
-
-      const countryMatches =
-        !appliedFilters.country || profile.countryCode === appliedFilters.country
-
-      const incomeMatches =
-        !appliedFilters.incomeBracket ||
-        profile.incomeBracket === appliedFilters.incomeBracket
-
-      return minAgeMatches && maxAgeMatches && countryMatches && incomeMatches
-    })
+    return filterProfiles(mockProfiles, appliedFilters)
   }, [appliedFilters])
 
   const handleChange = (
@@ -160,8 +62,8 @@ function MatchedProfilesRoute() {
   }
 
   const handleReset = () => {
-    setFilters(initialFilters)
-    setAppliedFilters(initialFilters)
+    setFilters(initialMatchFilters)
+    setAppliedFilters(initialMatchFilters)
   }
 
   return (
@@ -179,7 +81,10 @@ function MatchedProfilesRoute() {
             </p>
           </div>
 
-          <Link className="button button-secondary button-link" to="/decisions/new">
+          <Link
+            className="button button-secondary button-link"
+            to="/decisions/new"
+          >
             Back to decision input
           </Link>
         </div>
@@ -236,11 +141,11 @@ function MatchedProfilesRoute() {
                   onChange={handleChange}
                 >
                   <option value="">All countries</option>
-                  <option value="LK">Sri Lanka</option>
-                  <option value="SE">Sweden</option>
-                  <option value="GB">United Kingdom</option>
-                  <option value="CA">Canada</option>
-                  <option value="US">United States</option>
+                  {countryOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </select>
               </label>
 
@@ -253,12 +158,11 @@ function MatchedProfilesRoute() {
                   onChange={handleChange}
                 >
                   <option value="">All income brackets</option>
-                  <option value="under_25k">Under $25k</option>
-                  <option value="25k_50k">$25k - $50k</option>
-                  <option value="50k_100k">$50k - $100k</option>
-                  <option value="100k_200k">$100k - $200k</option>
-                  <option value="200k_plus">$200k+</option>
-                  <option value="prefer_not_say">Prefer not to say</option>
+                  {incomeOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </select>
               </label>
 
@@ -323,7 +227,8 @@ function MatchedProfilesRoute() {
               </div>
             ) : (
               <p className="dashboard-card-copy">
-                No profiles match your current filters. Try broadening your search.
+                No profiles match your current filters. Try broadening your
+                search.
               </p>
             )}
           </section>
