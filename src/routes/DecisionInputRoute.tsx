@@ -71,9 +71,13 @@ function DecisionInputRoute() {
             </div>
           ) : null}
 
-          <div className="form-actions single-action">
-            <Link className="button button-primary button-link" to="/onboarding">
+          <div className="form-actions dual-actions">
+            <Link className="button button-secondary button-link" to="/onboarding">
               Back to onboarding
+            </Link>
+
+            <Link className="button button-primary button-link" to="/matches">
+              View Matched Profiles
             </Link>
           </div>
         </div>
