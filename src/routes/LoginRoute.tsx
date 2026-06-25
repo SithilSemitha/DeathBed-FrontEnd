@@ -1,79 +1,85 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { getSupabaseClient } from '../lib/supabase'
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { login, googleLogin } from "../lib/api";
 
 type LoginErrors = {
-  email?: string
-  password?: string
-}
+  email?: string;
+  password?: string;
+};
 
 function LoginRoute() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const [email, setEmail] = useState<string>('')
-  const [password, setPassword] = useState<string>('')
-  const [errors, setErrors] = useState<LoginErrors>({})
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const [requestError, setRequestError] = useState<string>('')
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [errors, setErrors] = useState<LoginErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [requestError, setRequestError] = useState<string>("");
 
   function validate(): boolean {
-    const next: LoginErrors = {}
+    const next: LoginErrors = {};
 
     if (!email.trim()) {
-      next.email = 'Email is required.'
+      next.email = "Email is required.";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      next.email = 'Please enter a valid email address.'
+      next.email = "Please enter a valid email address.";
     }
 
     if (!password) {
-      next.password = 'Password is required.'
+      next.password = "Password is required.";
     }
 
-    setErrors(next)
-    return Object.keys(next).length === 0
+    setErrors(next);
+    return Object.keys(next).length === 0;
   }
 
   async function performLogin(
     loginEmail: string,
     loginPassword: string,
   ): Promise<void> {
-    const supabase = getSupabaseClient()
+    const res = await login(loginEmail, loginPassword);
 
-    if (!supabase) {
-      throw new Error(
-        'Supabase environment values are missing. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env.local.',
-      )
-    }
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email: loginEmail,
-      password: loginPassword,
-    })
-
-    if (error) {
-      throw new Error(error.message)
+    if (res?.error) {
+      throw new Error(res.error);
     }
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setRequestError('')
+    event.preventDefault();
+    setRequestError("");
 
-    if (!validate()) return
+    if (!validate()) return;
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
-      await performLogin(email.trim(), password)
-      navigate('/dashboard')
+      await performLogin(email.trim(), password);
+      navigate("/dashboard");
     } catch (error) {
       setRequestError(
         error instanceof Error
           ? error.message
-          : 'Could not log in right now. Please try again.',
-      )
+          : "Could not log in right now. Please try again.",
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleGoogleSignIn() {
+    setRequestError("");
+    setIsSubmitting(true);
+
+    try {
+      const res = await googleLogin();
+      const url = res?.url || res?.data?.url;
+      if (!url) throw new Error("Could not get Google login URL");
+      // redirect to Supabase OAuth URL
+      window.location.href = url;
+    } catch (err: any) {
+      setRequestError(err?.message || "Google sign-in failed");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -98,7 +104,7 @@ function LoginRoute() {
             <label className="field-group">
               <span className="field-label">Email</span>
               <input
-                className={`field-input ${errors.email ? 'field-input-error' : ''}`}
+                className={`field-input ${errors.email ? "field-input-error" : ""}`}
                 type="email"
                 placeholder="Enter your email"
                 value={email}
@@ -113,7 +119,7 @@ function LoginRoute() {
             <label className="field-group">
               <span className="field-label">Password</span>
               <input
-                className={`field-input ${errors.password ? 'field-input-error' : ''}`}
+                className={`field-input ${errors.password ? "field-input-error" : ""}`}
                 type="password"
                 placeholder="Enter your password"
                 value={password}
@@ -136,13 +142,29 @@ function LoginRoute() {
               className="button button-primary"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Logging in...' : 'Log In'}
+              {isSubmitting ? "Logging in..." : "Log In"}
             </button>
           </form>
+          <div className="form-actions">
+            <button
+              type="button"
+              className="button button-google"
+              onClick={handleGoogleSignIn}
+              disabled={isSubmitting}
+            >
+              Continue with Google
+            </button>
+          </div>
+
+          <div className="form-actions single-action auth-page-footer">
+            <Link className="button button-secondary button-link" to="/signup">
+              Create an account
+            </Link>
+          </div>
         </div>
       </div>
     </section>
-  )
+  );
 }
 
-export default LoginRoute
+export default LoginRoute;
