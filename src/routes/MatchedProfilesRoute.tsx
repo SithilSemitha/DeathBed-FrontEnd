@@ -66,6 +66,7 @@ const mockProfiles: MatchProfile[] = [
 
 function MatchedProfilesRoute() {
   const [filters, setFilters] = useState<FilterValues>(initialFilters)
+  const [appliedFilters, setAppliedFilters] = useState<FilterValues>(initialFilters)
 
   const ageRangeError = useMemo(() => {
     if (!filters.minAge || !filters.maxAge) {
@@ -89,10 +90,10 @@ function MatchedProfilesRoute() {
   const activeFilterSummary = useMemo(() => {
     const summary: string[] = []
 
-    if (filters.minAge) summary.push(`Min age: ${filters.minAge}`)
-    if (filters.maxAge) summary.push(`Max age: ${filters.maxAge}`)
+    if (appliedFilters.minAge) summary.push(`Min age: ${appliedFilters.minAge}`)
+    if (appliedFilters.maxAge) summary.push(`Max age: ${appliedFilters.maxAge}`)
 
-    if (filters.country) {
+    if (appliedFilters.country) {
       const countryMap: Record<string, string> = {
         LK: 'Sri Lanka',
         SE: 'Sweden',
@@ -101,10 +102,10 @@ function MatchedProfilesRoute() {
         US: 'United States',
       }
 
-      summary.push(`Country: ${countryMap[filters.country]}`)
+      summary.push(`Country: ${countryMap[appliedFilters.country]}`)
     }
 
-    if (filters.incomeBracket) {
+    if (appliedFilters.incomeBracket) {
       const incomeMap: Record<string, string> = {
         under_25k: 'Under $25k',
         '25k_50k': '$25k - $50k',
@@ -114,11 +115,30 @@ function MatchedProfilesRoute() {
         prefer_not_say: 'Prefer not to say',
       }
 
-      summary.push(`Income: ${incomeMap[filters.incomeBracket]}`)
+      summary.push(`Income: ${incomeMap[appliedFilters.incomeBracket]}`)
     }
 
     return summary
-  }, [filters])
+  }, [appliedFilters])
+
+  const filteredProfiles = useMemo(() => {
+    return mockProfiles.filter((profile) => {
+      const minAgeMatches =
+        !appliedFilters.minAge || profile.age >= Number(appliedFilters.minAge)
+
+      const maxAgeMatches =
+        !appliedFilters.maxAge || profile.age <= Number(appliedFilters.maxAge)
+
+      const countryMatches =
+        !appliedFilters.country || profile.countryCode === appliedFilters.country
+
+      const incomeMatches =
+        !appliedFilters.incomeBracket ||
+        profile.incomeBracket === appliedFilters.incomeBracket
+
+      return minAgeMatches && maxAgeMatches && countryMatches && incomeMatches
+    })
+  }, [appliedFilters])
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -131,8 +151,17 @@ function MatchedProfilesRoute() {
     }))
   }
 
+  const handleApplyFilters = () => {
+    if (ageRangeError) {
+      return
+    }
+
+    setAppliedFilters(filters)
+  }
+
   const handleReset = () => {
     setFilters(initialFilters)
+    setAppliedFilters(initialFilters)
   }
 
   return (
@@ -245,6 +274,7 @@ function MatchedProfilesRoute() {
                   type="button"
                   className="button button-primary"
                   disabled={Boolean(ageRangeError)}
+                  onClick={handleApplyFilters}
                 >
                   Apply Filters
                 </button>
@@ -260,7 +290,9 @@ function MatchedProfilesRoute() {
                   Current selected filters are reflected below.
                 </p>
               </div>
-              <span className="match-count-pill">{mockProfiles.length} results</span>
+              <span className="match-count-pill">
+                {filteredProfiles.length} results
+              </span>
             </div>
 
             {activeFilterSummary.length > 0 ? (
@@ -275,19 +307,25 @@ function MatchedProfilesRoute() {
               <p className="dashboard-card-copy">No filters selected yet.</p>
             )}
 
-            <div className="match-results-grid">
-              {mockProfiles.map((profile) => (
-                <article key={profile.id} className="profile-match-card">
-                  <p className="profile-match-label">{profile.label}</p>
-                  <h3 className="profile-match-title">
-                    Age {profile.age} • {profile.countryLabel}
-                  </h3>
-                  <p className="profile-match-copy">
-                    Income bracket: {profile.incomeLabel}
-                  </p>
-                </article>
-              ))}
-            </div>
+            {filteredProfiles.length > 0 ? (
+              <div className="match-results-grid">
+                {filteredProfiles.map((profile) => (
+                  <article key={profile.id} className="profile-match-card">
+                    <p className="profile-match-label">{profile.label}</p>
+                    <h3 className="profile-match-title">
+                      Age {profile.age} • {profile.countryLabel}
+                    </h3>
+                    <p className="profile-match-copy">
+                      Income bracket: {profile.incomeLabel}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="dashboard-card-copy">
+                No profiles match your current filters. Try broadening your search.
+              </p>
+            )}
           </section>
         </div>
       </div>
