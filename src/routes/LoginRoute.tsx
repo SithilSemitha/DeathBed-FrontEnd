@@ -145,21 +145,26 @@ function LoginRoute() {
               {isSubmitting ? "Logging in..." : "Log In"}
             </button>
           </form>
-          <div className="form-actions">
+                           <div className="auth-alt-actions">
+            <div className="auth-divider">
+              <span>or</span>
+            </div>
+
             <button
               type="button"
-              className="button button-google"
+              className="button button-google auth-full-width-button"
               onClick={handleGoogleSignIn}
               disabled={isSubmitting}
             >
               Continue with Google
             </button>
-          </div>
 
-          <div className="form-actions single-action auth-page-footer">
-            <Link className="button button-secondary button-link" to="/signup">
-              Create an account
-            </Link>
+            <p className="auth-footer-link-row">
+              Don&apos;t have an account?{' '}
+              <Link className="inline-link" to="/signup">
+                Create an account
+              </Link>
+            </p>
           </div>
         </div>
       </div>

@@ -645,6 +645,12 @@ select.field-input {
 
 .auth-page-footer {
   margin-top: 8px;
+  display: block;
+}
+
+.auth-page-footer .button-link,
+.auth-page-footer .button-secondary {
+  width: 100%;
 }
 
 .dashboard-content {
@@ -721,4 +727,61 @@ select.field-input {
     flex-direction: column;
     align-items: stretch;
   }
+}
+
+.auth-secondary-actions {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.auth-full-width-button {
+  width: 100%;
+  justify-content: center;
+}
+
+.auth-alt-actions {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.auth-divider {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 20px;
+}
+
+.auth-divider::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  border-top: 1px solid var(--border-soft);
+  transform: translateY(-50%);
+}
+
+.auth-divider span {
+  position: relative;
+  z-index: 1;
+  padding: 0 12px;
+  background: rgba(15, 23, 42, 0.88);
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+}
+
+.auth-full-width-button {
+  width: 100%;
+  justify-content: center;
+}
+
+.auth-footer-link-row {
+  margin: 0;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
 }

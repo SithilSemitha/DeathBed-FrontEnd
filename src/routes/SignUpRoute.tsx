@@ -144,21 +144,26 @@ function SignUpRoute() {
             </button>
           </form>
 
-          <div className="form-actions">
+                              <div className="auth-alt-actions">
+            <div className="auth-divider">
+              <span>or</span>
+            </div>
+
             <button
               type="button"
-              className="button button-google"
+              className="button button-google auth-full-width-button"
               onClick={handleGoogleSignIn}
               disabled={isSubmitting}
             >
               Continue with Google
             </button>
-          </div>
 
-          <div className="form-actions single-action auth-page-footer">
-            <Link className="button button-secondary button-link" to="/login">
-              Back to login
-            </Link>
+            <p className="auth-footer-link-row">
+              Already have an account?{' '}
+              <Link className="inline-link" to="/login">
+                Log in
+              </Link>
+            </p>
           </div>
         </div>
       </div>
