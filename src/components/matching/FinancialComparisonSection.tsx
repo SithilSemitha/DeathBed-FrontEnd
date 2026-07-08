@@ -1,12 +1,20 @@
 import type { FinancialChoice } from '../../lib/matches'
 
 interface FinancialComparisonSectionProps {
+  dimension: string
+  scoreLabel: string
+  rangeLabel: string
+  insightLabel: string
   choiceA: FinancialChoice
   choiceB: FinancialChoice
   quickSummary: string
 }
 
 function FinancialComparisonSection({
+  dimension,
+  scoreLabel,
+  rangeLabel,
+  insightLabel,
   choiceA,
   choiceB,
   quickSummary,
@@ -26,10 +34,16 @@ function FinancialComparisonSection({
         </div>
       </div>
 
+      <div className="comparison-meta-panel">
+        <p className="comparison-meta-label">{scoreLabel}</p>
+        <p className="comparison-meta-copy">{rangeLabel}</p>
+      </div>
+
       <div className="comparison-grid">
         <article className="comparison-card comparison-card-a">
           <p className="comparison-card-label">{choiceA.title}</p>
           <h3 className="comparison-card-title">{choiceA.label}</h3>
+          <p className="comparison-direction-label">{choiceA.directionLabel}</p>
           <div className="comparison-score-row">
             <span className="comparison-score-value">{choiceA.value}</span>
             <span className="comparison-score-unit">/ 100</span>
@@ -40,12 +54,14 @@ function FinancialComparisonSection({
               style={{ width: `${choiceA.value}%` }}
             />
           </div>
+          <p className="comparison-insight-label">{insightLabel}</p>
           <p className="comparison-card-copy">{choiceA.summary}</p>
         </article>
 
         <article className="comparison-card comparison-card-b">
           <p className="comparison-card-label">{choiceB.title}</p>
           <h3 className="comparison-card-title">{choiceB.label}</h3>
+          <p className="comparison-direction-label">{choiceB.directionLabel}</p>
           <div className="comparison-score-row">
             <span className="comparison-score-value">{choiceB.value}</span>
             <span className="comparison-score-unit">/ 100</span>
@@ -56,13 +72,16 @@ function FinancialComparisonSection({
               style={{ width: `${choiceB.value}%` }}
             />
           </div>
+          <p className="comparison-insight-label">{insightLabel}</p>
           <p className="comparison-card-copy">{choiceB.summary}</p>
         </article>
       </div>
 
       <div className="comparison-summary-panel">
         <h3 className="comparison-summary-title">Quick summary</h3>
-        <p className="comparison-summary-copy">{quickSummary}</p>
+        <p className="comparison-summary-copy">
+          <strong>{dimension}:</strong> {quickSummary}
+        </p>
       </div>
     </section>
   )

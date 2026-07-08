@@ -236,7 +236,11 @@ function MatchedProfilesRoute() {
           </section>
         </div>
 
-        <FinancialComparisonSection
+                <FinancialComparisonSection
+          dimension={mockFinancialComparison.dimension}
+          scoreLabel={mockFinancialComparison.scoreLabel}
+          rangeLabel={mockFinancialComparison.rangeLabel}
+          insightLabel={mockFinancialComparison.insightLabel}
           choiceA={mockFinancialComparison.choiceA}
           choiceB={mockFinancialComparison.choiceB}
           quickSummary={mockFinancialComparison.quickSummary}
