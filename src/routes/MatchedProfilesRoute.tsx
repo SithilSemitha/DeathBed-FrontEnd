@@ -7,8 +7,9 @@ import {
   filterProfiles,
   incomeOptions,
   initialMatchFilters,
-  mockFinancialComparison,
+  mockFinancialComparisonApi,
   mockProfiles,
+  prepareFinancialComparisonData,
   type MatchFilters,
 } from '../lib/matches'
 
@@ -43,6 +44,10 @@ function MatchedProfilesRoute() {
   const filteredProfiles = useMemo(() => {
     return filterProfiles(mockProfiles, appliedFilters)
   }, [appliedFilters])
+
+  const financialComparison = useMemo(() => {
+    return prepareFinancialComparisonData(mockFinancialComparisonApi)
+  }, [])
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -236,14 +241,14 @@ function MatchedProfilesRoute() {
           </section>
         </div>
 
-                <FinancialComparisonSection
-          dimension={mockFinancialComparison.dimension}
-          scoreLabel={mockFinancialComparison.scoreLabel}
-          rangeLabel={mockFinancialComparison.rangeLabel}
-          insightLabel={mockFinancialComparison.insightLabel}
-          choiceA={mockFinancialComparison.choiceA}
-          choiceB={mockFinancialComparison.choiceB}
-          quickSummary={mockFinancialComparison.quickSummary}
+        <FinancialComparisonSection
+          dimension={financialComparison.dimension}
+          scoreLabel={financialComparison.scoreLabel}
+          rangeLabel={financialComparison.rangeLabel}
+          insightLabel={financialComparison.insightLabel}
+          choiceA={financialComparison.choiceA}
+          choiceB={financialComparison.choiceB}
+          quickSummary={financialComparison.quickSummary}
         />
       </div>
     </section>

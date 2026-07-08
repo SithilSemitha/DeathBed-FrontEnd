@@ -40,6 +40,18 @@ export type FinancialComparisonData = {
   quickSummary: string
 }
 
+export type ComparisonApiShape = {
+  dimension: string
+  scoreLabel: string
+  rangeLabel: string
+  insightLabel: string
+  choices: {
+    choiceA: FinancialChoice
+    choiceB: FinancialChoice
+  }
+  quickSummary: string
+}
+
 export const initialMatchFilters: MatchFilters = {
   minAge: '',
   maxAge: '',
@@ -103,26 +115,28 @@ export const mockProfiles: MatchProfile[] = [
   },
 ]
 
-export const mockFinancialComparison: FinancialComparisonData = {
+export const mockFinancialComparisonApi: ComparisonApiShape = {
   dimension: 'Financial outcomes',
   scoreLabel: 'Estimated financial outlook',
   rangeLabel: '0 = weaker short-term outcome, 100 = stronger projected upside',
   insightLabel: 'What this score suggests',
-  choiceA: {
-    title: 'Choice A',
-    label: 'Stay in current path',
-    value: 46,
-    directionLabel: 'More stable, lower upside',
-    summary:
-      'This path appears to offer steadier short-term earnings, but less long-term financial growth in the mock comparison.',
-  },
-  choiceB: {
-    title: 'Choice B',
-    label: 'Take the alternative path',
-    value: 74,
-    directionLabel: 'Higher upside, more volatility',
-    summary:
-      'This path appears to offer stronger long-term financial potential, though the early period may be less predictable.',
+  choices: {
+    choiceA: {
+      title: 'Choice A',
+      label: 'Stay in current path',
+      value: 46,
+      directionLabel: 'More stable, lower upside',
+      summary:
+        'This path appears to offer steadier short-term earnings, but less long-term financial growth in the mock comparison.',
+    },
+    choiceB: {
+      title: 'Choice B',
+      label: 'Take the alternative path',
+      value: 74,
+      directionLabel: 'Higher upside, more volatility',
+      summary:
+        'This path appears to offer stronger long-term financial potential, though the early period may be less predictable.',
+    },
   },
   quickSummary:
     'In this mock comparison, Choice B looks financially stronger overall, while Choice A appears safer in the short term but less rewarding over time.',
@@ -206,4 +220,18 @@ export function filterProfiles(
 
     return minAgeMatches && maxAgeMatches && countryMatches && incomeMatches
   })
+}
+
+export function prepareFinancialComparisonData(
+  data: ComparisonApiShape,
+): FinancialComparisonData {
+  return {
+    dimension: data.dimension,
+    scoreLabel: data.scoreLabel,
+    rangeLabel: data.rangeLabel,
+    insightLabel: data.insightLabel,
+    choiceA: data.choices.choiceA,
+    choiceB: data.choices.choiceB,
+    quickSummary: data.quickSummary,
+  }
 }
