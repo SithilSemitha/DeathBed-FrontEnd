@@ -7,24 +7,10 @@ import {
   filterProfiles,
   incomeOptions,
   initialMatchFilters,
+  mockFinancialComparison,
   mockProfiles,
   type MatchFilters,
 } from '../lib/matches'
-
-const financialComparison = {
-  choiceA: {
-    title: 'Choice A',
-    label: 'Stay in current path',
-    value: 46,
-    summary: 'More stable short-term income, but slower upside over time.',
-  },
-  choiceB: {
-    title: 'Choice B',
-    label: 'Take the alternative path',
-    value: 74,
-    summary: 'Higher upside potential, but more volatility in the early phase.',
-  },
-}
 
 function MatchedProfilesRoute() {
   const [filters, setFilters] = useState<MatchFilters>(initialMatchFilters)
@@ -251,8 +237,9 @@ function MatchedProfilesRoute() {
         </div>
 
         <FinancialComparisonSection
-          choiceA={financialComparison.choiceA}
-          choiceB={financialComparison.choiceB}
+          choiceA={mockFinancialComparison.choiceA}
+          choiceB={mockFinancialComparison.choiceB}
+          quickSummary={mockFinancialComparison.quickSummary}
         />
       </div>
     </section>

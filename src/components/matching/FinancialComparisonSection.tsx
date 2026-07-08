@@ -1,18 +1,15 @@
-type FinancialChoice = {
-  title: string
-  label: string
-  value: number
-  summary: string
-}
+import type { FinancialChoice } from '../../lib/matches'
 
 interface FinancialComparisonSectionProps {
   choiceA: FinancialChoice
   choiceB: FinancialChoice
+  quickSummary: string
 }
 
 function FinancialComparisonSection({
   choiceA,
   choiceB,
+  quickSummary,
 }: FinancialComparisonSectionProps) {
   return (
     <section className="comparison-section">
@@ -65,11 +62,7 @@ function FinancialComparisonSection({
 
       <div className="comparison-summary-panel">
         <h3 className="comparison-summary-title">Quick summary</h3>
-        <p className="comparison-summary-copy">
-          In this mock view, <strong>Choice B</strong> shows a stronger
-          financial upside than <strong>Choice A</strong>, while Choice A
-          appears more stable but less rewarding over time.
-        </p>
+        <p className="comparison-summary-copy">{quickSummary}</p>
       </div>
     </section>
   )

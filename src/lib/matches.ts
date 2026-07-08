@@ -22,6 +22,20 @@ export type PreparedMatchFilterPayload = {
   incomeBracket?: string
 }
 
+export type FinancialChoice = {
+  title: string
+  label: string
+  value: number
+  summary: string
+}
+
+export type FinancialComparisonData = {
+  dimension: string
+  choiceA: FinancialChoice
+  choiceB: FinancialChoice
+  quickSummary: string
+}
+
 export const initialMatchFilters: MatchFilters = {
   minAge: '',
   maxAge: '',
@@ -84,6 +98,24 @@ export const mockProfiles: MatchProfile[] = [
     incomeLabel: '$100k - $200k',
   },
 ]
+
+export const mockFinancialComparison: FinancialComparisonData = {
+  dimension: 'Financial outcomes',
+  choiceA: {
+    title: 'Choice A',
+    label: 'Stay in current path',
+    value: 46,
+    summary: 'More stable short-term income, but slower upside over time.',
+  },
+  choiceB: {
+    title: 'Choice B',
+    label: 'Take the alternative path',
+    value: 74,
+    summary: 'Higher upside potential, but more volatility in the early phase.',
+  },
+  quickSummary:
+    'In this mock view, Choice B shows a stronger financial upside than Choice A, while Choice A appears more stable but less rewarding over time.',
+}
 
 const countryLabelMap: Record<string, string> = {
   LK: 'Sri Lanka',
