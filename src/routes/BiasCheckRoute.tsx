@@ -5,6 +5,8 @@ type DetectedBias = {
   name: string
   confidence: string
   summary: string
+  explanation: string
+  guidanceQuestion: string
 }
 
 const mockBiasResults: DetectedBias[] = [
@@ -13,18 +15,30 @@ const mockBiasResults: DetectedBias[] = [
     confidence: 'High confidence',
     summary:
       'Your reasoning suggests you may be favoring the familiar option partly because it feels safer than change.',
+    explanation:
+      'Status quo bias happens when the current option feels safer simply because it is already familiar, not necessarily because it is better.',
+    guidanceQuestion:
+      'If both options were equally unfamiliar, would you still choose the same path?',
   },
   {
     name: 'Loss Aversion',
     confidence: 'Moderate confidence',
     summary:
       'You appear to focus more on what you might lose than what you might gain by choosing differently.',
+    explanation:
+      'Loss aversion means potential losses feel heavier than equivalent gains, which can make one option feel riskier than it objectively is.',
+    guidanceQuestion:
+      'Are you protecting something important, or are you over-weighting the fear of losing it?',
   },
   {
     name: 'Overthinking / Analysis Paralysis',
     confidence: 'Low confidence',
     summary:
       'There are signs that uncertainty itself may be slowing your decision more than the actual decision quality demands.',
+    explanation:
+      'Analysis paralysis can happen when the search for certainty becomes so strong that it delays action even when enough information already exists.',
+    guidanceQuestion:
+      'What would you decide if you accepted that no option will ever feel 100% certain?',
   },
 ]
 
@@ -133,7 +147,22 @@ function BiasCheckRoute() {
                           {bias.confidence}
                         </span>
                       </div>
+
                       <p className="bias-result-copy">{bias.summary}</p>
+
+                      <div className="bias-detail-block">
+                        <h4 className="bias-detail-title">What this means</h4>
+                        <p className="bias-detail-copy">{bias.explanation}</p>
+                      </div>
+
+                      <div className="bias-guidance-block">
+                        <h4 className="bias-detail-title">
+                          Reflection question
+                        </h4>
+                        <p className="bias-guidance-copy">
+                          {bias.guidanceQuestion}
+                        </p>
+                      </div>
                     </article>
                   ))}
                 </div>
