@@ -1,9 +1,26 @@
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getMockJournalById } from '../lib/journals'
 
 function JournalDetailRoute() {
   const { journalId = '' } = useParams()
   const journal = getMockJournalById(journalId)
+  const [exportMessage, setExportMessage] = useState<string>('')
+
+  const handleExportClick = () => {
+    if (!journal) {
+      return
+    }
+
+    if (journal.status !== 'Completed') {
+      setExportMessage(
+        'Only completed journals can be exported as PDF.',
+      )
+      return
+    }
+
+    setExportMessage('Journal is ready for PDF export.')
+  }
 
   if (!journal) {
     return (
@@ -46,7 +63,11 @@ function JournalDetailRoute() {
 
           <div className="journal-detail-header-actions">
             {journal.status === 'Completed' ? (
-              <button type="button" className="button button-primary">
+              <button
+                type="button"
+                className="button button-primary"
+                onClick={handleExportClick}
+              >
                 Export PDF
               </button>
             ) : null}
@@ -59,6 +80,10 @@ function JournalDetailRoute() {
 
         <div className="journal-history-layout">
           <section className="journal-history-main">
+            {exportMessage ? (
+              <div className="journal-export-message">{exportMessage}</div>
+            ) : null}
+
             <article className="journal-history-card journal-detail-card">
               <div className="journal-history-card-top">
                 <span

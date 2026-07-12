@@ -1817,3 +1817,13 @@ select.field-input {
     align-items: stretch;
   }
 }
+
+.journal-export-message {
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border: 1px solid rgba(74, 222, 128, 0.28);
+  border-radius: 16px;
+  background: rgba(20, 83, 45, 0.18);
+  color: #bbf7d0;
+  line-height: 1.6;
+}
