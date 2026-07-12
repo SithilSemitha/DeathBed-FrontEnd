@@ -10,6 +10,7 @@ import DashboardRoute from './routes/DashboardRoute'
 import AuthCallbackRoute from './routes/AuthCallbackRoute'
 import MatchedProfilesRoute from './routes/MatchedProfilesRoute'
 import BiasCheckRoute from './routes/BiasCheckRoute'
+import RegretRatingRoute from './routes/RegretRatingRoute'
 import './App.css'
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Route path="/decisions/new" element={<DecisionInputRoute />} />
         <Route path="/matches" element={<MatchedProfilesRoute />} />
         <Route path="/bias-check" element={<BiasCheckRoute />} />
+        <Route path="/regret-rating" element={<RegretRatingRoute />} />
       </Routes>
     </BrowserRouter>
   )

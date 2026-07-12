@@ -1463,3 +1463,110 @@ select.field-input {
   line-height: 1.6;
   font-style: italic;
 }
+
+.regret-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.9fr);
+  gap: 20px;
+}
+
+.regret-card {
+  min-height: 100%;
+}
+
+.regret-intro-block {
+  margin-bottom: 20px;
+}
+
+.regret-intro-title {
+  margin: 0 0 8px;
+  color: var(--text-primary);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.regret-intro-copy {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.regret-scale {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.regret-score-button {
+  min-height: 64px;
+  border: 1px solid var(--border-soft);
+  border-radius: 18px;
+  background: rgba(30, 41, 59, 0.46);
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+  transition:
+    border-color 0.2s ease,
+    transform 0.15s ease,
+    background 0.2s ease;
+}
+
+.regret-score-button:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+  background: rgba(45, 55, 72, 0.7);
+}
+
+.regret-guidance-panel {
+  margin-top: 22px;
+  padding: 18px;
+  border: 1px solid var(--border-soft);
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.regret-guidance-title {
+  margin: 0 0 8px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.regret-guidance-copy {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.regret-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.regret-side-card {
+  padding: 24px;
+  border: 1px solid var(--border-soft);
+  border-radius: 22px;
+  background: rgba(15, 23, 42, 0.82);
+  box-shadow: var(--shadow-soft);
+}
+
+@media (max-width: 980px) {
+  .regret-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .regret-scale {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .regret-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
