@@ -1773,3 +1773,32 @@ select.field-input {
   color: var(--text-primary);
   line-height: 1.6;
 }
+
+.journal-history-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.journal-detail-card {
+  min-height: 100%;
+}
+
+.journal-detail-body {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.journal-detail-body-title {
+  margin: 0 0 10px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.journal-detail-body-copy {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}

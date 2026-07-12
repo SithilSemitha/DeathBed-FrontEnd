@@ -12,6 +12,7 @@ import MatchedProfilesRoute from './routes/MatchedProfilesRoute'
 import BiasCheckRoute from './routes/BiasCheckRoute'
 import RegretRatingRoute from './routes/RegretRatingRoute'
 import JournalHistoryRoute from './routes/JournalHistoryRoute'
+import JournalDetailRoute from './routes/JournalDetailRoute'
 import './App.css'
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
         <Route path="/bias-check" element={<BiasCheckRoute />} />
         <Route path="/regret-rating" element={<RegretRatingRoute />} />
         <Route path="/journals" element={<JournalHistoryRoute />} />
+        <Route path="/journals/:journalId" element={<JournalDetailRoute />} />
       </Routes>
     </BrowserRouter>
   )
