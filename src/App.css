@@ -1932,3 +1932,11 @@ select.field-input {
     align-items: stretch;
   }
 }
+
+.stories-results-panel {
+  margin-top: 22px;
+}
+
+.stories-results-step-label {
+  margin-bottom: 10px;
+}

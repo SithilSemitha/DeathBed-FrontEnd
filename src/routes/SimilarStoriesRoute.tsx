@@ -1,14 +1,64 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+type SimilarStory = {
+  id: string
+  label: string
+  title: string
+  summary: string
+}
+
+const mockSimilarStories: SimilarStory[] = [
+  {
+    id: 'story-1',
+    label: 'Story Preview 1',
+    title: 'Leaving a stable role for uncertain work',
+    summary:
+      'A story about someone who left a predictable path to pursue more meaningful work, later reflecting on trade-offs between safety and fulfillment.',
+  },
+  {
+    id: 'story-2',
+    label: 'Story Preview 2',
+    title: 'Choosing risk for long-term growth',
+    summary:
+      'A story about accepting short-term instability in exchange for long-term career growth, and the regret signals that appeared along the way.',
+  },
+  {
+    id: 'story-3',
+    label: 'Story Preview 3',
+    title: 'Staying with the familiar option too long',
+    summary:
+      'A story about delaying change because the known path felt safer, followed by reflection on missed opportunities.',
+  },
+]
+
 function SimilarStoriesRoute() {
   const [decisionContext, setDecisionContext] = useState<string>('')
+  const [hasSearched, setHasSearched] = useState<boolean>(false)
 
   const contextLength = decisionContext.trim().length
 
   const canSearch = useMemo(() => {
     return contextLength >= 20
   }, [contextLength])
+
+  const handleSearch = () => {
+    if (!canSearch) {
+      return
+    }
+
+    setHasSearched(true)
+  }
+
+  const handleContextChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
+    setDecisionContext(event.target.value)
+
+    if (hasSearched) {
+      setHasSearched(false)
+    }
+  }
 
   return (
     <section className="screen-shell">
@@ -47,7 +97,7 @@ function SimilarStoriesRoute() {
                 <textarea
                   className="field-input stories-textarea"
                   value={decisionContext}
-                  onChange={(event) => setDecisionContext(event.target.value)}
+                  onChange={handleContextChange}
                   placeholder="Example: I am deciding whether to leave a secure career path for a more meaningful but less certain opportunity."
                 />
                 <span className="field-helper">
@@ -64,48 +114,72 @@ function SimilarStoriesRoute() {
                   type="button"
                   className="button button-primary"
                   disabled={!canSearch}
+                  onClick={handleSearch}
                 >
                   Find Similar Stories
                 </button>
               </div>
             </div>
 
-            <div className="stories-results-list">
-              <article className="story-result-card">
-                <p className="story-result-label">Story Preview 1</p>
-                <h3 className="story-result-title">
-                  Leaving a stable role for uncertain work
-                </h3>
-                <p className="story-result-copy">
-                  A story about someone who left a predictable path to pursue
-                  more meaningful work, later reflecting on trade-offs between
-                  safety and fulfillment.
+            {hasSearched ? (
+              <div className="stories-results-panel">
+                <p className="step-label stories-results-step-label">
+                  Search Results
                 </p>
-              </article>
+                <h2 className="stories-section-title">Similar regret stories</h2>
+                <p className="stories-section-copy">
+                  These mock results represent the kinds of stories the user may
+                  see after semantic matching is performed.
+                </p>
 
-              <article className="story-result-card">
-                <p className="story-result-label">Story Preview 2</p>
-                <h3 className="story-result-title">
-                  Choosing risk for long-term growth
-                </h3>
-                <p className="story-result-copy">
-                  A story about accepting short-term instability in exchange for
-                  long-term career growth, and the regret signals that appeared
-                  along the way.
-                </p>
-              </article>
+                <div className="stories-results-list">
+                  {mockSimilarStories.map((story) => (
+                    <article key={story.id} className="story-result-card">
+                      <p className="story-result-label">{story.label}</p>
+                      <h3 className="story-result-title">{story.title}</h3>
+                      <p className="story-result-copy">{story.summary}</p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="stories-results-list">
+                <article className="story-result-card">
+                  <p className="story-result-label">Story Preview 1</p>
+                  <h3 className="story-result-title">
+                    Leaving a stable role for uncertain work
+                  </h3>
+                  <p className="story-result-copy">
+                    A story about someone who left a predictable path to pursue
+                    more meaningful work, later reflecting on trade-offs between
+                    safety and fulfillment.
+                  </p>
+                </article>
 
-              <article className="story-result-card">
-                <p className="story-result-label">Story Preview 3</p>
-                <h3 className="story-result-title">
-                  Staying with the familiar option too long
-                </h3>
-                <p className="story-result-copy">
-                  A story about delaying change because the known path felt
-                  safer, followed by reflection on missed opportunities.
-                </p>
-              </article>
-            </div>
+                <article className="story-result-card">
+                  <p className="story-result-label">Story Preview 2</p>
+                  <h3 className="story-result-title">
+                    Choosing risk for long-term growth
+                  </h3>
+                  <p className="story-result-copy">
+                    A story about accepting short-term instability in exchange
+                    for long-term career growth, and the regret signals that
+                    appeared along the way.
+                  </p>
+                </article>
+
+                <article className="story-result-card">
+                  <p className="story-result-label">Story Preview 3</p>
+                  <h3 className="story-result-title">
+                    Staying with the familiar option too long
+                  </h3>
+                  <p className="story-result-copy">
+                    A story about delaying change because the known path felt
+                    safer, followed by reflection on missed opportunities.
+                  </p>
+                </article>
+              </div>
+            )}
           </section>
 
           <aside className="stories-side-card">
