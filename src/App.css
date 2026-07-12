@@ -1273,3 +1273,28 @@ select.field-input {
     align-items: stretch;
   }
 }
+
+.classification-panel {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  background: rgba(30, 41, 59, 0.45);
+}
+
+.classification-label {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.classification-value {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 700;
+}

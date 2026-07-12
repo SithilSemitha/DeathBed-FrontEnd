@@ -7,10 +7,68 @@ type DecisionInputValues = {
   choiceB: string
 }
 
+type DecisionCategory =
+  | 'Career'
+  | 'Education'
+  | 'Relationship'
+  | 'Financial'
+  | 'Relocation'
+
 const initialValues: DecisionInputValues = {
   decisionText: '',
   choiceA: '',
   choiceB: '',
+}
+
+function inferMockCategory(text: string): DecisionCategory {
+  const normalized = text.toLowerCase()
+
+  if (
+    normalized.includes('job') ||
+    normalized.includes('career') ||
+    normalized.includes('work') ||
+    normalized.includes('role')
+  ) {
+    return 'Career'
+  }
+
+  if (
+    normalized.includes('study') ||
+    normalized.includes('degree') ||
+    normalized.includes('university') ||
+    normalized.includes('education')
+  ) {
+    return 'Education'
+  }
+
+  if (
+    normalized.includes('relationship') ||
+    normalized.includes('partner') ||
+    normalized.includes('marry') ||
+    normalized.includes('break up')
+  ) {
+    return 'Relationship'
+  }
+
+  if (
+    normalized.includes('money') ||
+    normalized.includes('debt') ||
+    normalized.includes('salary') ||
+    normalized.includes('financial')
+  ) {
+    return 'Financial'
+  }
+
+  if (
+    normalized.includes('move') ||
+    normalized.includes('relocate') ||
+    normalized.includes('abroad') ||
+    normalized.includes('country')
+  ) {
+    return 'Relocation'
+  }
+
+  return 'Career'
 }
 
 function DecisionInputRoute() {
@@ -36,6 +94,10 @@ function DecisionInputRoute() {
     }
 
     return `${trimmed.slice(0, 220)}...`
+  }, [values.decisionText])
+
+  const predictedCategory = useMemo(() => {
+    return inferMockCategory(values.decisionText)
   }, [values.decisionText])
 
   const handleTextChange = (
@@ -177,6 +239,13 @@ function DecisionInputRoute() {
                     Decision summary
                   </h3>
                   <p className="understanding-summary-text">{decisionPreview}</p>
+
+                  <div className="classification-panel">
+                    <span className="classification-label">
+                      Predicted category
+                    </span>
+                    <p className="classification-value">{predictedCategory}</p>
+                  </div>
 
                   <div className="understanding-choice-grid">
                     <div className="understanding-choice-card">
