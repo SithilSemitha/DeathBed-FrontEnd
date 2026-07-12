@@ -42,9 +42,25 @@ const mockBiasResults: DetectedBias[] = [
   },
 ]
 
+function runMockBiasCheck(text: string): Promise<DetectedBias[]> {
+  return new Promise((resolve, reject) => {
+    window.setTimeout(() => {
+      if (text.toLowerCase().includes('error-demo')) {
+        reject(new Error('Bias analysis is temporarily unavailable. Please try again.'))
+        return
+      }
+
+      resolve(mockBiasResults)
+    }, 900)
+  })
+}
+
 function BiasCheckRoute() {
   const [reasoningText, setReasoningText] = useState<string>('')
+  const [biasResults, setBiasResults] = useState<DetectedBias[]>([])
   const [hasCheckedBiases, setHasCheckedBiases] = useState<boolean>(false)
+  const [isCheckingBiases, setIsCheckingBiases] = useState<boolean>(false)
+  const [requestError, setRequestError] = useState<string>('')
 
   const reasoningLength = reasoningText.trim().length
 
@@ -52,21 +68,41 @@ function BiasCheckRoute() {
     return reasoningLength >= 50
   }, [reasoningLength])
 
-  const handleCheckBiases = () => {
+  const handleCheckBiases = async () => {
     if (!canCheckBiases) {
       return
     }
 
-    setHasCheckedBiases(true)
+    setRequestError('')
+    setIsCheckingBiases(true)
+    setHasCheckedBiases(false)
+
+    try {
+      const results = await runMockBiasCheck(reasoningText.trim())
+      setBiasResults(results)
+      setHasCheckedBiases(true)
+    } catch (error) {
+      setBiasResults([])
+      setHasCheckedBiases(false)
+      setRequestError(
+        error instanceof Error
+          ? error.message
+          : 'Could not check for biases right now. Please try again.',
+      )
+    } finally {
+      setIsCheckingBiases(false)
+    }
   }
 
   const handleReasoningChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
     setReasoningText(event.target.value)
+    setRequestError('')
 
     if (hasCheckedBiases) {
       setHasCheckedBiases(false)
+      setBiasResults([])
     }
   }
 
@@ -97,6 +133,12 @@ function BiasCheckRoute() {
               onSubmit={(event) => event.preventDefault()}
               noValidate
             >
+              {requestError ? (
+                <div className="status-banner status-banner-error">
+                  {requestError}
+                </div>
+              ) : null}
+
               <label className="field-group">
                 <span className="field-label">Your reasoning</span>
                 <textarea
@@ -104,6 +146,7 @@ function BiasCheckRoute() {
                   value={reasoningText}
                   onChange={handleReasoningChange}
                   placeholder="Example: I feel like staying in my current path is safer because I already know the work, but part of me worries that I might only be avoiding change because it feels uncomfortable."
+                  disabled={isCheckingBiases}
                 />
                 <span className="field-helper bias-helper">
                   Minimum 50 characters. Be honest and specific — this works
@@ -119,10 +162,10 @@ function BiasCheckRoute() {
                 <button
                   type="button"
                   className="button button-primary"
-                  disabled={!canCheckBiases}
+                  disabled={!canCheckBiases || isCheckingBiases}
                   onClick={handleCheckBiases}
                 >
-                  Check for Biases
+                  {isCheckingBiases ? 'Checking for Biases...' : 'Check for Biases'}
                 </button>
               </div>
             </form>
@@ -139,7 +182,7 @@ function BiasCheckRoute() {
                 </p>
 
                 <div className="bias-results-list">
-                  {mockBiasResults.map((bias) => (
+                  {biasResults.map((bias) => (
                     <article key={bias.name} className="bias-result-card">
                       <div className="bias-result-header">
                         <h3 className="bias-result-title">{bias.name}</h3>
