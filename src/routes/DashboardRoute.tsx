@@ -1,6 +1,84 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+type DecisionHistoryItem = {
+  id: string
+  title: string
+  savedAt: string
+  category: string
+}
+
+const mockDecisionHistory: DecisionHistoryItem[] = [
+  {
+    id: 'decision-1',
+    title: 'Career change to startup',
+    savedAt: 'Saved 2 days ago',
+    category: 'Career',
+  },
+  {
+    id: 'decision-2',
+    title: 'Move abroad for postgraduate study',
+    savedAt: 'Saved 1 week ago',
+    category: 'Education',
+  },
+  {
+    id: 'decision-3',
+    title: 'Whether to stay in current relationship',
+    savedAt: 'Saved 3 weeks ago',
+    category: 'Relationship',
+  },
+]
+
+function fetchMockDecisionHistory(): Promise<DecisionHistoryItem[]> {
+  return new Promise((resolve) => {
+    window.setTimeout(() => {
+      resolve(mockDecisionHistory)
+    }, 900)
+  })
+}
+
 function DashboardRoute() {
+  const [decisions, setDecisions] = useState<DecisionHistoryItem[]>([])
+  const [isLoadingDecisions, setIsLoadingDecisions] = useState<boolean>(true)
+  const [decisionLoadError, setDecisionLoadError] = useState<string>('')
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadDecisionHistory() {
+      setIsLoadingDecisions(true)
+      setDecisionLoadError('')
+
+      try {
+        const data = await fetchMockDecisionHistory()
+
+        if (!isMounted) {
+          return
+        }
+
+        setDecisions(data)
+      } catch {
+        if (!isMounted) {
+          return
+        }
+
+        setDecisionLoadError(
+          'Could not load past decisions right now. Please try again.',
+        )
+      } finally {
+        if (isMounted) {
+          setIsLoadingDecisions(false)
+        }
+      }
+    }
+
+    loadDecisionHistory()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
   return (
     <section className="screen-shell">
       <div className="screen-backdrop" />
@@ -29,20 +107,33 @@ function DashboardRoute() {
               DeathBed.
             </p>
 
-            <div className="dashboard-list">
-              <div className="dashboard-list-item">
-                <strong>Career change to startup</strong>
-                <span>Saved 2 days ago</span>
+            {decisionLoadError ? (
+              <div className="status-banner status-banner-error">
+                {decisionLoadError}
               </div>
-              <div className="dashboard-list-item">
-                <strong>Move abroad for postgraduate study</strong>
-                <span>Saved 1 week ago</span>
+            ) : null}
+
+            {isLoadingDecisions ? (
+              <div className="dashboard-list">
+                <div className="dashboard-list-item">
+                  <strong>Loading past decisions...</strong>
+                  <span>Please wait while your decision history is fetched.</span>
+                </div>
               </div>
-              <div className="dashboard-list-item">
-                <strong>Whether to stay in current relationship</strong>
-                <span>Saved 3 weeks ago</span>
+            ) : null}
+
+            {!isLoadingDecisions && !decisionLoadError ? (
+              <div className="dashboard-list">
+                {decisions.map((decision) => (
+                  <div key={decision.id} className="dashboard-list-item">
+                    <strong>{decision.title}</strong>
+                    <span>
+                      {decision.savedAt} • {decision.category}
+                    </span>
+                  </div>
+                ))}
               </div>
-            </div>
+            ) : null}
           </section>
 
           <section className="dashboard-card">
