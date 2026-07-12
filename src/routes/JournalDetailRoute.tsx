@@ -2,24 +2,94 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getMockJournalById } from '../lib/journals'
 
+function buildMockPdfBlob(title: string): Blob {
+  const safeTitle = title.replace(/[()]/g, '')
+  const pdfContent = `%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 98 >>
+stream
+BT
+/F1 18 Tf
+72 720 Td
+(Mock Journal Export) Tj
+0 -28 Td
+/F1 12 Tf
+(${safeTitle}) Tj
+0 -20 Td
+(This is a frontend placeholder PDF download.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000010 00000 n 
+0000000063 00000 n 
+0000000122 00000 n 
+0000000248 00000 n 
+0000000397 00000 n 
+trailer
+<< /Root 1 0 R /Size 6 >>
+startxref
+467
+%%EOF`
+
+  return new Blob([pdfContent], { type: 'application/pdf' })
+}
+
 function JournalDetailRoute() {
   const { journalId = '' } = useParams()
   const journal = getMockJournalById(journalId)
   const [exportMessage, setExportMessage] = useState<string>('')
+  const [isExporting, setIsExporting] = useState<boolean>(false)
 
-  const handleExportClick = () => {
+  const handleExportClick = async () => {
     if (!journal) {
       return
     }
 
     if (journal.status !== 'Completed') {
-      setExportMessage(
-        'Only completed journals can be exported as PDF.',
-      )
+      setExportMessage('Only completed journals can be exported as PDF.')
       return
     }
 
-    setExportMessage('Journal is ready for PDF export.')
+    setIsExporting(true)
+    setExportMessage('Preparing PDF download...')
+
+    try {
+      const pdfBlob = buildMockPdfBlob(journal.title)
+      const fileUrl = window.URL.createObjectURL(pdfBlob)
+
+      const anchor = document.createElement('a')
+      anchor.href = fileUrl
+      anchor.download = `${journal.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')}.pdf`
+
+      document.body.appendChild(anchor)
+      anchor.click()
+      document.body.removeChild(anchor)
+      window.URL.revokeObjectURL(fileUrl)
+
+      setExportMessage('PDF download started successfully.')
+    } catch {
+      setExportMessage('Could not start the PDF download right now.')
+    } finally {
+      setIsExporting(false)
+    }
   }
 
   if (!journal) {
@@ -67,8 +137,9 @@ function JournalDetailRoute() {
                 type="button"
                 className="button button-primary"
                 onClick={handleExportClick}
+                disabled={isExporting}
               >
-                Export PDF
+                {isExporting ? 'Preparing PDF...' : 'Export PDF'}
               </button>
             ) : null}
 
