@@ -44,9 +44,17 @@ function JournalDetailRoute() {
             </p>
           </div>
 
-          <Link className="button button-secondary button-link" to="/journals">
-            Back to journal history
-          </Link>
+          <div className="journal-detail-header-actions">
+            {journal.status === 'Completed' ? (
+              <button type="button" className="button button-primary">
+                Export PDF
+              </button>
+            ) : null}
+
+            <Link className="button button-secondary button-link" to="/journals">
+              Back to journal history
+            </Link>
+          </div>
         </div>
 
         <div className="journal-history-layout">
