@@ -1,6 +1,89 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+type JournalHistoryItem = {
+  id: string
+  title: string
+  status: 'Completed' | 'In Progress'
+  date: string
+  summary: string
+}
+
+const mockJournalHistory: JournalHistoryItem[] = [
+  {
+    id: 'journal-1',
+    title: 'Career change reflection journal',
+    status: 'Completed',
+    date: '22 Jun 2026',
+    summary:
+      'A completed pre-mortem journal exploring whether changing to a lower-paying but more meaningful path would create future regret.',
+  },
+  {
+    id: 'journal-2',
+    title: 'Study abroad decision journal',
+    status: 'In Progress',
+    date: '20 Jun 2026',
+    summary:
+      'A partially completed reflection about moving abroad for postgraduate study and the trade-offs involved.',
+  },
+  {
+    id: 'journal-3',
+    title: 'Relationship future-risk journal',
+    status: 'Completed',
+    date: '14 Jun 2026',
+    summary:
+      'A completed journal focused on identifying possible future regrets around staying in or leaving a relationship.',
+  },
+]
+
+function fetchMockJournalHistory(): Promise<JournalHistoryItem[]> {
+  return new Promise((resolve) => {
+    window.setTimeout(() => {
+      resolve(mockJournalHistory)
+    }, 900)
+  })
+}
+
 function JournalHistoryRoute() {
+  const [journals, setJournals] = useState<JournalHistoryItem[]>([])
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [loadError, setLoadError] = useState<string>('')
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadJournalHistory() {
+      setIsLoading(true)
+      setLoadError('')
+
+      try {
+        const data = await fetchMockJournalHistory()
+
+        if (!isMounted) {
+          return
+        }
+
+        setJournals(data)
+      } catch {
+        if (!isMounted) {
+          return
+        }
+
+        setLoadError('Could not load journal history right now. Please try again.')
+      } finally {
+        if (isMounted) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    loadJournalHistory()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
   return (
     <section className="screen-shell">
       <div className="screen-backdrop" />
@@ -31,56 +114,51 @@ function JournalHistoryRoute() {
               </p>
             </div>
 
-            <div className="journal-history-list">
-              <article className="journal-history-card">
-                <div className="journal-history-card-top">
-                  <span className="journal-status-pill journal-status-complete">
-                    Completed
-                  </span>
-                  <span className="journal-history-date">22 Jun 2026</span>
-                </div>
-                <h3 className="journal-history-card-title">
-                  Career change reflection journal
-                </h3>
-                <p className="journal-history-card-copy">
-                  A completed pre-mortem journal exploring whether changing to a
-                  lower-paying but more meaningful path would create future
-                  regret.
-                </p>
-              </article>
+            {loadError ? (
+              <div className="status-banner status-banner-error">{loadError}</div>
+            ) : null}
 
-              <article className="journal-history-card">
-                <div className="journal-history-card-top">
-                  <span className="journal-status-pill journal-status-draft">
-                    In Progress
-                  </span>
-                  <span className="journal-history-date">20 Jun 2026</span>
-                </div>
-                <h3 className="journal-history-card-title">
-                  Study abroad decision journal
-                </h3>
-                <p className="journal-history-card-copy">
-                  A partially completed reflection about moving abroad for
-                  postgraduate study and the trade-offs involved.
+            {isLoading ? (
+              <div className="journal-history-header-card">
+                <h2 className="journal-history-title">Loading journals...</h2>
+                <p className="journal-history-copy">
+                  Fetching your saved journal history.
                 </p>
-              </article>
+              </div>
+            ) : null}
 
-              <article className="journal-history-card">
-                <div className="journal-history-card-top">
-                  <span className="journal-status-pill journal-status-complete">
-                    Completed
-                  </span>
-                  <span className="journal-history-date">14 Jun 2026</span>
-                </div>
-                <h3 className="journal-history-card-title">
-                  Relationship future-risk journal
-                </h3>
-                <p className="journal-history-card-copy">
-                  A completed journal focused on identifying possible future
-                  regrets around staying in or leaving a relationship.
+            {!isLoading && !loadError && journals.length === 0 ? (
+              <div className="journal-history-header-card">
+                <h2 className="journal-history-title">No journals yet</h2>
+                <p className="journal-history-copy">
+                  Your saved Pre-Mortem journals will appear here once they are
+                  created.
                 </p>
-              </article>
-            </div>
+              </div>
+            ) : null}
+
+            {!isLoading && !loadError && journals.length > 0 ? (
+              <div className="journal-history-list">
+                {journals.map((journal) => (
+                  <article key={journal.id} className="journal-history-card">
+                    <div className="journal-history-card-top">
+                      <span
+                        className={`journal-status-pill ${
+                          journal.status === 'Completed'
+                            ? 'journal-status-complete'
+                            : 'journal-status-draft'
+                        }`}
+                      >
+                        {journal.status}
+                      </span>
+                      <span className="journal-history-date">{journal.date}</span>
+                    </div>
+                    <h3 className="journal-history-card-title">{journal.title}</h3>
+                    <p className="journal-history-card-copy">{journal.summary}</p>
+                  </article>
+                ))}
+              </div>
+            ) : null}
           </section>
 
           <aside className="journal-history-side-card">
