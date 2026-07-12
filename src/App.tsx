@@ -1,17 +1,16 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-
-import OnboardingRoute from "./routes/OnboardingRoute";
-import DecisionInputRoute from "./routes/DecisionInputRoute";
-import DataUsageRoute from "./routes/DataUsageRoute";
-import LoginRoute from "./routes/LoginRoute";
-import SignUpRoute from "./routes/SignUpRoute";
-import ForgotPasswordRoute from "./routes/ForgotPasswordRoute";
-import ResetPasswordRoute from "./routes/ResetPasswordRoute";
-import DashboardRoute from "./routes/DashboardRoute";
-import AuthCallbackRoute from "./routes/AuthCallbackRoute";
-import MatchedProfilesRoute from "./routes/MatchedProfilesRoute";
-
-import "./App.css";
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import OnboardingRoute from './routes/OnboardingRoute'
+import DecisionInputRoute from './routes/DecisionInputRoute'
+import DataUsageRoute from './routes/DataUsageRoute'
+import LoginRoute from './routes/LoginRoute'
+import SignUpRoute from './routes/SignUpRoute'
+import ForgotPasswordRoute from './routes/ForgotPasswordRoute'
+import ResetPasswordRoute from './routes/ResetPasswordRoute'
+import DashboardRoute from './routes/DashboardRoute'
+import AuthCallbackRoute from './routes/AuthCallbackRoute'
+import MatchedProfilesRoute from './routes/MatchedProfilesRoute'
+import BiasCheckRoute from './routes/BiasCheckRoute'
+import './App.css'
 
 function App() {
   return (
@@ -28,9 +27,10 @@ function App() {
         <Route path="/dashboard" element={<DashboardRoute />} />
         <Route path="/decisions/new" element={<DecisionInputRoute />} />
         <Route path="/matches" element={<MatchedProfilesRoute />} />
+        <Route path="/bias-check" element={<BiasCheckRoute />} />
       </Routes>
     </BrowserRouter>
-  );
+  )
 }
 
-export default App;
+export default App
