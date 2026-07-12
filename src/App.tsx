@@ -13,6 +13,7 @@ import BiasCheckRoute from './routes/BiasCheckRoute'
 import RegretRatingRoute from './routes/RegretRatingRoute'
 import JournalHistoryRoute from './routes/JournalHistoryRoute'
 import JournalDetailRoute from './routes/JournalDetailRoute'
+import SimilarStoriesRoute from './routes/SimilarStoriesRoute'
 import './App.css'
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
         <Route path="/regret-rating" element={<RegretRatingRoute />} />
         <Route path="/journals" element={<JournalHistoryRoute />} />
         <Route path="/journals/:journalId" element={<JournalDetailRoute />} />
+        <Route path="/similar-stories" element={<SimilarStoriesRoute />} />
       </Routes>
     </BrowserRouter>
   )
