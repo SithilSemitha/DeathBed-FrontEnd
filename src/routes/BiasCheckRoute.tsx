@@ -1,6 +1,15 @@
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 function BiasCheckRoute() {
+  const [reasoningText, setReasoningText] = useState<string>('')
+
+  const reasoningLength = reasoningText.trim().length
+
+  const canCheckBiases = useMemo(() => {
+    return reasoningLength >= 50
+  }, [reasoningLength])
+
   return (
     <section className="screen-shell">
       <div className="screen-backdrop" />
@@ -32,6 +41,8 @@ function BiasCheckRoute() {
                 <span className="field-label">Your reasoning</span>
                 <textarea
                   className="field-input bias-textarea"
+                  value={reasoningText}
+                  onChange={(event) => setReasoningText(event.target.value)}
                   placeholder="Example: I feel like staying in my current path is safer because I already know the work, but part of me worries that I might only be avoiding change because it feels uncomfortable."
                 />
                 <span className="field-helper bias-helper">
@@ -41,12 +52,14 @@ function BiasCheckRoute() {
               </label>
 
               <div className="bias-footer">
-                <span className="decision-counter">0 / minimum 50</span>
+                <span className="decision-counter">
+                  {reasoningLength} / minimum 50
+                </span>
 
                 <button
                   type="button"
                   className="button button-primary"
-                  disabled
+                  disabled={!canCheckBiases}
                 >
                   Check for Biases
                 </button>
