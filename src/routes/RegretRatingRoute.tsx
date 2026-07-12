@@ -1,6 +1,9 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 function RegretRatingRoute() {
+  const [selectedScore, setSelectedScore] = useState<number | null>(null)
+
   return (
     <section className="screen-shell">
       <div className="screen-backdrop" />
@@ -37,7 +40,10 @@ function RegretRatingRoute() {
                 <button
                   key={value}
                   type="button"
-                  className="regret-score-button"
+                  className={`regret-score-button ${
+                    selectedScore === value ? 'regret-score-button-active' : ''
+                  }`}
+                  onClick={() => setSelectedScore(value)}
                 >
                   {value}
                 </button>
@@ -54,12 +60,16 @@ function RegretRatingRoute() {
             </div>
 
             <div className="regret-footer">
-              <span className="decision-counter">No score selected yet</span>
+              <span className="decision-counter">
+                {selectedScore
+                  ? `Selected score: ${selectedScore} / 10`
+                  : 'No score selected yet'}
+              </span>
 
               <button
                 type="button"
                 className="button button-primary"
-                disabled
+                disabled={selectedScore === null}
               >
                 Continue
               </button>

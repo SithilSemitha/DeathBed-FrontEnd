@@ -1570,3 +1570,9 @@ select.field-input {
     align-items: stretch;
   }
 }
+
+.regret-score-button-active {
+  border-color: var(--accent);
+  background: rgba(124, 58, 237, 0.26);
+  box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.14);
+}
