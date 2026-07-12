@@ -1597,3 +1597,24 @@ select.field-input {
   color: #ffe4e6;
   line-height: 1.6;
 }
+
+.regret-acknowledgement-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid rgba(251, 113, 133, 0.28);
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.28);
+  color: #ffe4e6;
+  line-height: 1.6;
+}
+
+.regret-acknowledgement-card .option-input {
+  margin-top: 8px;
+}
+
+.regret-acknowledgement-copy {
+  color: #ffe4e6;
+}

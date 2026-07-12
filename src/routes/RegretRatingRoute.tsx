@@ -3,10 +3,32 @@ import { Link } from 'react-router-dom'
 
 function RegretRatingRoute() {
   const [selectedScore, setSelectedScore] = useState<number | null>(null)
+  const [hasAcknowledgedHighRegret, setHasAcknowledgedHighRegret] =
+    useState<boolean>(false)
 
   const isHighRegret = useMemo(() => {
     return selectedScore !== null && selectedScore >= 8
   }, [selectedScore])
+
+  const canProceed = useMemo(() => {
+    if (selectedScore === null) {
+      return false
+    }
+
+    if (isHighRegret && !hasAcknowledgedHighRegret) {
+      return false
+    }
+
+    return true
+  }, [selectedScore, isHighRegret, hasAcknowledgedHighRegret])
+
+  const handleScoreSelect = (value: number) => {
+    setSelectedScore(value)
+
+    if (value < 8) {
+      setHasAcknowledgedHighRegret(false)
+    }
+  }
 
   return (
     <section className="screen-shell">
@@ -47,7 +69,7 @@ function RegretRatingRoute() {
                   className={`regret-score-button ${
                     selectedScore === value ? 'regret-score-button-active' : ''
                   }`}
-                  onClick={() => setSelectedScore(value)}
+                  onClick={() => handleScoreSelect(value)}
                 >
                   {value}
                 </button>
@@ -63,6 +85,21 @@ function RegretRatingRoute() {
                   under-explored. Take a moment to reflect before moving
                   forward.
                 </p>
+
+                <label className="regret-acknowledgement-card">
+                  <input
+                    className="option-input"
+                    type="checkbox"
+                    checked={hasAcknowledgedHighRegret}
+                    onChange={(event) =>
+                      setHasAcknowledgedHighRegret(event.target.checked)
+                    }
+                  />
+                  <span className="regret-acknowledgement-copy">
+                    I understand this high regret warning and still want to
+                    continue.
+                  </span>
+                </label>
               </div>
             ) : null}
 
@@ -85,7 +122,7 @@ function RegretRatingRoute() {
               <button
                 type="button"
                 className="button button-primary"
-                disabled={selectedScore === null}
+                disabled={!canProceed}
               >
                 Continue
               </button>
