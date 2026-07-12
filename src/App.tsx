@@ -11,6 +11,7 @@ import AuthCallbackRoute from './routes/AuthCallbackRoute'
 import MatchedProfilesRoute from './routes/MatchedProfilesRoute'
 import BiasCheckRoute from './routes/BiasCheckRoute'
 import RegretRatingRoute from './routes/RegretRatingRoute'
+import JournalHistoryRoute from './routes/JournalHistoryRoute'
 import './App.css'
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
         <Route path="/matches" element={<MatchedProfilesRoute />} />
         <Route path="/bias-check" element={<BiasCheckRoute />} />
         <Route path="/regret-rating" element={<RegretRatingRoute />} />
+        <Route path="/journals" element={<JournalHistoryRoute />} />
       </Routes>
     </BrowserRouter>
   )
