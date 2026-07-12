@@ -1576,3 +1576,24 @@ select.field-input {
   background: rgba(124, 58, 237, 0.26);
   box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.14);
 }
+
+.regret-warning-panel {
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid rgba(251, 113, 133, 0.35);
+  border-radius: 18px;
+  background: rgba(127, 29, 29, 0.18);
+}
+
+.regret-warning-title {
+  margin: 0 0 8px;
+  color: #fecdd3;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.regret-warning-copy {
+  margin: 0;
+  color: #ffe4e6;
+  line-height: 1.6;
+}

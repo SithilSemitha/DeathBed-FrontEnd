@@ -1,8 +1,12 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 function RegretRatingRoute() {
   const [selectedScore, setSelectedScore] = useState<number | null>(null)
+
+  const isHighRegret = useMemo(() => {
+    return selectedScore !== null && selectedScore >= 8
+  }, [selectedScore])
 
   return (
     <section className="screen-shell">
@@ -49,6 +53,18 @@ function RegretRatingRoute() {
                 </button>
               ))}
             </div>
+
+            {isHighRegret ? (
+              <div className="regret-warning-panel">
+                <h3 className="regret-warning-title">High regret warning</h3>
+                <p className="regret-warning-copy">
+                  You selected a high anticipated regret score. This may be a
+                  sign that the decision still feels emotionally risky or
+                  under-explored. Take a moment to reflect before moving
+                  forward.
+                </p>
+              </div>
+            ) : null}
 
             <div className="regret-guidance-panel">
               <h3 className="regret-guidance-title">What this helps with</h3>
