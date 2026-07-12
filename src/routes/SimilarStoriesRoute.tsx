@@ -1,6 +1,15 @@
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 function SimilarStoriesRoute() {
+  const [decisionContext, setDecisionContext] = useState<string>('')
+
+  const contextLength = decisionContext.trim().length
+
+  const canSearch = useMemo(() => {
+    return contextLength >= 20
+  }, [contextLength])
+
   return (
     <section className="screen-shell">
       <div className="screen-backdrop" />
@@ -37,6 +46,8 @@ function SimilarStoriesRoute() {
                 <span className="field-label">Decision context</span>
                 <textarea
                   className="field-input stories-textarea"
+                  value={decisionContext}
+                  onChange={(event) => setDecisionContext(event.target.value)}
                   placeholder="Example: I am deciding whether to leave a secure career path for a more meaningful but less certain opportunity."
                 />
                 <span className="field-helper">
@@ -46,8 +57,14 @@ function SimilarStoriesRoute() {
               </label>
 
               <div className="stories-search-footer">
-                <span className="decision-counter">Preview mode only</span>
-                <button type="button" className="button button-primary" disabled>
+                <span className="decision-counter">
+                  {contextLength} / minimum 20
+                </span>
+                <button
+                  type="button"
+                  className="button button-primary"
+                  disabled={!canSearch}
+                >
                   Find Similar Stories
                 </button>
               </div>
