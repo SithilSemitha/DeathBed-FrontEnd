@@ -1,6 +1,38 @@
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+type DecisionInputValues = {
+  decisionText: string
+  choiceA: string
+  choiceB: string
+}
+
+const initialValues: DecisionInputValues = {
+  decisionText: '',
+  choiceA: '',
+  choiceB: '',
+}
+
 function DecisionInputRoute() {
+  const [values, setValues] = useState<DecisionInputValues>(initialValues)
+
+  const decisionLength = values.decisionText.trim().length
+
+  const canAnalyse = useMemo(() => {
+    return decisionLength >= 20
+  }, [decisionLength])
+
+  const handleTextChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+  ) => {
+    const { name, value } = event.target
+
+    setValues((current) => ({
+      ...current,
+      [name]: value,
+    }))
+  }
+
   return (
     <section className="screen-shell">
       <div className="screen-backdrop" />
@@ -33,6 +65,9 @@ function DecisionInputRoute() {
                 <span className="field-label">Decision description</span>
                 <textarea
                   className="field-input decision-textarea"
+                  name="decisionText"
+                  value={values.decisionText}
+                  onChange={handleTextChange}
                   placeholder="Example: I’m deciding whether to stay in my current job or move into a lower-paying role that feels more meaningful."
                 />
                 <span className="field-helper decision-helper">
@@ -60,6 +95,9 @@ function DecisionInputRoute() {
                     <input
                       className="field-input"
                       type="text"
+                      name="choiceA"
+                      value={values.choiceA}
+                      onChange={handleTextChange}
                       placeholder="e.g. Stay in current role"
                     />
                   </label>
@@ -69,6 +107,9 @@ function DecisionInputRoute() {
                     <input
                       className="field-input"
                       type="text"
+                      name="choiceB"
+                      value={values.choiceB}
+                      onChange={handleTextChange}
                       placeholder="e.g. Move to a new role"
                     />
                   </label>
@@ -76,12 +117,14 @@ function DecisionInputRoute() {
               </div>
 
               <div className="decision-footer">
-                <span className="decision-counter">0 / minimum 20</span>
+                <span className="decision-counter">
+                  {decisionLength} / minimum 20
+                </span>
 
                 <button
                   type="button"
                   className="button button-primary"
-                  disabled
+                  disabled={!canAnalyse}
                 >
                   Analyse Decision
                 </button>
@@ -91,7 +134,9 @@ function DecisionInputRoute() {
 
           <aside className="decision-side-card">
             <p className="step-label decision-side-step">What happens next</p>
-            <h2 className="decision-side-title">This input powers the next stages</h2>
+            <h2 className="decision-side-title">
+              This input powers the next stages
+            </h2>
             <ul className="decision-side-list">
               <li>Category classification</li>
               <li>Matched profile filtering</li>
