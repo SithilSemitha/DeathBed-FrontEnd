@@ -7,6 +7,10 @@ type JournalHistoryItem = {
   status: 'Completed' | 'In Progress'
   date: string
   summary: string
+  category: string
+  promptCount: number
+  lastUpdated: string
+  focus: string
 }
 
 const mockJournalHistory: JournalHistoryItem[] = [
@@ -17,6 +21,10 @@ const mockJournalHistory: JournalHistoryItem[] = [
     date: '22 Jun 2026',
     summary:
       'A completed pre-mortem journal exploring whether changing to a lower-paying but more meaningful path would create future regret.',
+    category: 'Career',
+    promptCount: 5,
+    lastUpdated: '22 Jun 2026',
+    focus: 'Meaning vs financial stability',
   },
   {
     id: 'journal-2',
@@ -25,6 +33,10 @@ const mockJournalHistory: JournalHistoryItem[] = [
     date: '20 Jun 2026',
     summary:
       'A partially completed reflection about moving abroad for postgraduate study and the trade-offs involved.',
+    category: 'Education',
+    promptCount: 3,
+    lastUpdated: '21 Jun 2026',
+    focus: 'Opportunity vs distance from family',
   },
   {
     id: 'journal-3',
@@ -33,6 +45,10 @@ const mockJournalHistory: JournalHistoryItem[] = [
     date: '14 Jun 2026',
     summary:
       'A completed journal focused on identifying possible future regrets around staying in or leaving a relationship.',
+    category: 'Relationship',
+    promptCount: 5,
+    lastUpdated: '14 Jun 2026',
+    focus: 'Long-term compatibility and emotional cost',
   },
 ]
 
@@ -153,8 +169,29 @@ function JournalHistoryRoute() {
                       </span>
                       <span className="journal-history-date">{journal.date}</span>
                     </div>
+
                     <h3 className="journal-history-card-title">{journal.title}</h3>
+
+                    <div className="journal-entry-meta-row">
+                      <span className="journal-entry-meta-pill">
+                        {journal.category}
+                      </span>
+                      <span className="journal-entry-meta-pill">
+                        {journal.promptCount} prompts completed
+                      </span>
+                      <span className="journal-entry-meta-pill">
+                        Updated {journal.lastUpdated}
+                      </span>
+                    </div>
+
                     <p className="journal-history-card-copy">{journal.summary}</p>
+
+                    <div className="journal-entry-focus-block">
+                      <span className="journal-entry-focus-label">
+                        Reflection focus
+                      </span>
+                      <p className="journal-entry-focus-text">{journal.focus}</p>
+                    </div>
                   </article>
                 ))}
               </div>
