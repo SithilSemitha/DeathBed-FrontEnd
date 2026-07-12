@@ -20,6 +20,14 @@ const initialValues: DecisionInputValues = {
   choiceB: '',
 }
 
+const decisionCategories: DecisionCategory[] = [
+  'Career',
+  'Education',
+  'Relationship',
+  'Financial',
+  'Relocation',
+]
+
 function inferMockCategory(text: string): DecisionCategory {
   const normalized = text.toLowerCase()
 
@@ -75,6 +83,10 @@ function DecisionInputRoute() {
   const [values, setValues] = useState<DecisionInputValues>(initialValues)
   const [hasReviewedUnderstanding, setHasReviewedUnderstanding] =
     useState<boolean>(false)
+  const [selectedCategory, setSelectedCategory] =
+    useState<DecisionCategory>('Career')
+  const [hasManualCategoryOverride, setHasManualCategoryOverride] =
+    useState<boolean>(false)
 
   const decisionLength = values.decisionText.trim().length
 
@@ -113,6 +125,10 @@ function DecisionInputRoute() {
     if (hasReviewedUnderstanding) {
       setHasReviewedUnderstanding(false)
     }
+
+    if (hasManualCategoryOverride) {
+      setHasManualCategoryOverride(false)
+    }
   }
 
   const handleAnalyse = () => {
@@ -120,7 +136,16 @@ function DecisionInputRoute() {
       return
     }
 
+    setSelectedCategory(predictedCategory)
+    setHasManualCategoryOverride(false)
     setHasReviewedUnderstanding(true)
+  }
+
+  const handleCategoryChange = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
+    setSelectedCategory(event.target.value as DecisionCategory)
+    setHasManualCategoryOverride(true)
   }
 
   return (
@@ -244,7 +269,32 @@ function DecisionInputRoute() {
                     <span className="classification-label">
                       Predicted category
                     </span>
-                    <p className="classification-value">{predictedCategory}</p>
+                    <p className="classification-value">{selectedCategory}</p>
+
+                    <label className="field-group classification-edit-group">
+                      <span className="field-label">Change category</span>
+                      <select
+                        className="field-input"
+                        value={selectedCategory}
+                        onChange={handleCategoryChange}
+                      >
+                        {decisionCategories.map((category) => (
+                          <option key={category} value={category}>
+                            {category}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+
+                    {hasManualCategoryOverride ? (
+                      <p className="classification-override-note">
+                        You have manually updated the displayed category.
+                      </p>
+                    ) : (
+                      <p className="classification-override-note">
+                        Current suggestion is based on the entered decision text.
+                      </p>
+                    )}
                   </div>
 
                   <div className="understanding-choice-grid">

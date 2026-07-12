@@ -1298,3 +1298,14 @@ select.field-input {
   font-size: 1rem;
   font-weight: 700;
 }
+
+.classification-edit-group {
+  margin-top: 14px;
+}
+
+.classification-override-note {
+  margin: 12px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
