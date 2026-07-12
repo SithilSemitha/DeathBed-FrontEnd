@@ -15,12 +15,28 @@ const initialValues: DecisionInputValues = {
 
 function DecisionInputRoute() {
   const [values, setValues] = useState<DecisionInputValues>(initialValues)
+  const [hasReviewedUnderstanding, setHasReviewedUnderstanding] =
+    useState<boolean>(false)
 
   const decisionLength = values.decisionText.trim().length
 
   const canAnalyse = useMemo(() => {
     return decisionLength >= 20
   }, [decisionLength])
+
+  const decisionPreview = useMemo(() => {
+    const trimmed = values.decisionText.trim()
+
+    if (!trimmed) {
+      return ''
+    }
+
+    if (trimmed.length <= 220) {
+      return trimmed
+    }
+
+    return `${trimmed.slice(0, 220)}...`
+  }, [values.decisionText])
 
   const handleTextChange = (
     event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
@@ -31,6 +47,18 @@ function DecisionInputRoute() {
       ...current,
       [name]: value,
     }))
+
+    if (hasReviewedUnderstanding) {
+      setHasReviewedUnderstanding(false)
+    }
+  }
+
+  const handleAnalyse = () => {
+    if (!canAnalyse) {
+      return
+    }
+
+    setHasReviewedUnderstanding(true)
   }
 
   return (
@@ -125,11 +153,67 @@ function DecisionInputRoute() {
                   type="button"
                   className="button button-primary"
                   disabled={!canAnalyse}
+                  onClick={handleAnalyse}
                 >
                   Analyse Decision
                 </button>
               </div>
             </form>
+
+            {hasReviewedUnderstanding ? (
+              <div className="understanding-panel">
+                <p className="step-label understanding-step-label">
+                  Confirm Understanding
+                </p>
+                <h2 className="understanding-title">
+                  Here&apos;s what we understood
+                </h2>
+                <p className="understanding-copy">
+                  Review this summary before moving into later analysis steps.
+                </p>
+
+                <div className="understanding-summary-card">
+                  <h3 className="understanding-summary-title">
+                    Decision summary
+                  </h3>
+                  <p className="understanding-summary-text">{decisionPreview}</p>
+
+                  <div className="understanding-choice-grid">
+                    <div className="understanding-choice-card">
+                      <span className="understanding-choice-label">
+                        Choice A
+                      </span>
+                      <p className="understanding-choice-text">
+                        {values.choiceA.trim() || 'Not provided yet'}
+                      </p>
+                    </div>
+
+                    <div className="understanding-choice-card">
+                      <span className="understanding-choice-label">
+                        Choice B
+                      </span>
+                      <p className="understanding-choice-text">
+                        {values.choiceB.trim() || 'Not provided yet'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="understanding-actions">
+                  <button
+                    type="button"
+                    className="button button-secondary"
+                    onClick={() => setHasReviewedUnderstanding(false)}
+                  >
+                    Edit Decision
+                  </button>
+
+                  <button type="button" className="button button-primary">
+                    Looks Right
+                  </button>
+                </div>
+              </div>
+            ) : null}
           </section>
 
           <aside className="decision-side-card">
