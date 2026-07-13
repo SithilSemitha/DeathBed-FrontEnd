@@ -23,6 +23,8 @@ type JournalLinkItem = {
   relatedDecision: string
 }
 
+type DashboardView = 'all' | 'decisions' | 'analyses' | 'journals'
+
 const mockDecisionHistory: DecisionHistoryItem[] = [
   {
     id: 'decision-1',
@@ -108,6 +110,8 @@ function fetchMockJournalLinks(): Promise<JournalLinkItem[]> {
 }
 
 function DashboardRoute() {
+  const [activeView, setActiveView] = useState<DashboardView>('all')
+
   const [decisions, setDecisions] = useState<DecisionHistoryItem[]>([])
   const [isLoadingDecisions, setIsLoadingDecisions] = useState<boolean>(true)
   const [decisionLoadError, setDecisionLoadError] = useState<string>('')
@@ -233,117 +237,165 @@ function DashboardRoute() {
           </Link>
         </div>
 
+        <div className="dashboard-filter-bar">
+          <button
+            type="button"
+            className={`dashboard-filter-pill ${
+              activeView === 'all' ? 'dashboard-filter-pill-active' : ''
+            }`}
+            onClick={() => setActiveView('all')}
+          >
+            All
+          </button>
+
+          <button
+            type="button"
+            className={`dashboard-filter-pill ${
+              activeView === 'decisions' ? 'dashboard-filter-pill-active' : ''
+            }`}
+            onClick={() => setActiveView('decisions')}
+          >
+            Past Decisions
+          </button>
+
+          <button
+            type="button"
+            className={`dashboard-filter-pill ${
+              activeView === 'analyses' ? 'dashboard-filter-pill-active' : ''
+            }`}
+            onClick={() => setActiveView('analyses')}
+          >
+            Saved Analyses
+          </button>
+
+          <button
+            type="button"
+            className={`dashboard-filter-pill ${
+              activeView === 'journals' ? 'dashboard-filter-pill-active' : ''
+            }`}
+            onClick={() => setActiveView('journals')}
+          >
+            Linked Journals
+          </button>
+        </div>
+
         <div className="dashboard-grid">
-          <section className="dashboard-card">
-            <h2 className="dashboard-card-title">Past Decisions</h2>
-            <p className="dashboard-card-copy">
-              A list of the major decisions you have already explored in
-              DeathBed.
-            </p>
+          {(activeView === 'all' || activeView === 'decisions') && (
+            <section className="dashboard-card">
+              <h2 className="dashboard-card-title">Past Decisions</h2>
+              <p className="dashboard-card-copy">
+                A list of the major decisions you have already explored in
+                DeathBed.
+              </p>
 
-            {decisionLoadError ? (
-              <div className="status-banner status-banner-error">
-                {decisionLoadError}
-              </div>
-            ) : null}
-
-            {isLoadingDecisions ? (
-              <div className="dashboard-list">
-                <div className="dashboard-list-item">
-                  <strong>Loading past decisions...</strong>
-                  <span>Please wait while your decision history is fetched.</span>
+              {decisionLoadError ? (
+                <div className="status-banner status-banner-error">
+                  {decisionLoadError}
                 </div>
-              </div>
-            ) : null}
+              ) : null}
 
-            {!isLoadingDecisions && !decisionLoadError ? (
-              <div className="dashboard-list">
-                {decisions.map((decision) => (
-                  <div key={decision.id} className="dashboard-list-item">
-                    <strong>{decision.title}</strong>
-                    <span>
-                      {decision.savedAt} • {decision.category}
-                    </span>
+              {isLoadingDecisions ? (
+                <div className="dashboard-list">
+                  <div className="dashboard-list-item">
+                    <strong>Loading past decisions...</strong>
+                    <span>Please wait while your decision history is fetched.</span>
                   </div>
-                ))}
-              </div>
-            ) : null}
-          </section>
-
-          <section className="dashboard-card">
-            <h2 className="dashboard-card-title">Saved Analyses</h2>
-            <p className="dashboard-card-copy">
-              Quick access to your previous analysis outputs and summaries.
-            </p>
-
-            {analysisLoadError ? (
-              <div className="status-banner status-banner-error">
-                {analysisLoadError}
-              </div>
-            ) : null}
-
-            {isLoadingAnalyses ? (
-              <div className="dashboard-list">
-                <div className="dashboard-list-item">
-                  <strong>Loading saved analyses...</strong>
-                  <span>Please wait while your analysis history is fetched.</span>
                 </div>
-              </div>
-            ) : null}
+              ) : null}
 
-            {!isLoadingAnalyses && !analysisLoadError ? (
-              <div className="dashboard-list">
-                {analyses.map((analysis) => (
-                  <div key={analysis.id} className="dashboard-list-item">
-                    <strong>{analysis.title}</strong>
-                    <span>
-                      {analysis.lastOpened} • {analysis.type} •{' '}
-                      {analysis.relatedDecision}
-                    </span>
+              {!isLoadingDecisions && !decisionLoadError ? (
+                <div className="dashboard-list">
+                  {decisions.map((decision) => (
+                    <div key={decision.id} className="dashboard-list-item">
+                      <strong>{decision.title}</strong>
+                      <span>
+                        {decision.savedAt} • {decision.category}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </section>
+          )}
+
+          {(activeView === 'all' || activeView === 'analyses') && (
+            <section className="dashboard-card">
+              <h2 className="dashboard-card-title">Saved Analyses</h2>
+              <p className="dashboard-card-copy">
+                Quick access to your previous analysis outputs and summaries.
+              </p>
+
+              {analysisLoadError ? (
+                <div className="status-banner status-banner-error">
+                  {analysisLoadError}
+                </div>
+              ) : null}
+
+              {isLoadingAnalyses ? (
+                <div className="dashboard-list">
+                  <div className="dashboard-list-item">
+                    <strong>Loading saved analyses...</strong>
+                    <span>Please wait while your analysis history is fetched.</span>
                   </div>
-                ))}
-              </div>
-            ) : null}
-          </section>
-
-          <section className="dashboard-card">
-            <h2 className="dashboard-card-title">Linked Journals</h2>
-            <p className="dashboard-card-copy">
-              Your reflection history and journal connections will appear here.
-            </p>
-
-            {journalLoadError ? (
-              <div className="status-banner status-banner-error">
-                {journalLoadError}
-              </div>
-            ) : null}
-
-            {isLoadingJournals ? (
-              <div className="dashboard-list">
-                <div className="dashboard-list-item">
-                  <strong>Loading linked journals...</strong>
-                  <span>Please wait while your journal links are fetched.</span>
                 </div>
-              </div>
-            ) : null}
+              ) : null}
 
-            {!isLoadingJournals && !journalLoadError ? (
-              <div className="dashboard-list">
-                {journals.map((journal) => (
-                  <Link
-                    key={journal.id}
-                    className="dashboard-list-item dashboard-list-link"
-                    to={`/journals/${journal.id}`}
-                  >
-                    <strong>{journal.title}</strong>
-                    <span>
-                      {journal.status} • {journal.relatedDecision}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            ) : null}
-          </section>
+              {!isLoadingAnalyses && !analysisLoadError ? (
+                <div className="dashboard-list">
+                  {analyses.map((analysis) => (
+                    <div key={analysis.id} className="dashboard-list-item">
+                      <strong>{analysis.title}</strong>
+                      <span>
+                        {analysis.lastOpened} • {analysis.type} •{' '}
+                        {analysis.relatedDecision}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </section>
+          )}
+
+          {(activeView === 'all' || activeView === 'journals') && (
+            <section className="dashboard-card">
+              <h2 className="dashboard-card-title">Linked Journals</h2>
+              <p className="dashboard-card-copy">
+                Your reflection history and journal connections will appear here.
+              </p>
+
+              {journalLoadError ? (
+                <div className="status-banner status-banner-error">
+                  {journalLoadError}
+                </div>
+              ) : null}
+
+              {isLoadingJournals ? (
+                <div className="dashboard-list">
+                  <div className="dashboard-list-item">
+                    <strong>Loading linked journals...</strong>
+                    <span>Please wait while your journal links are fetched.</span>
+                  </div>
+                </div>
+              ) : null}
+
+              {!isLoadingJournals && !journalLoadError ? (
+                <div className="dashboard-list">
+                  {journals.map((journal) => (
+                    <Link
+                      key={journal.id}
+                      className="dashboard-list-item dashboard-list-link"
+                      to={`/journals/${journal.id}`}
+                    >
+                      <strong>{journal.title}</strong>
+                      <span>
+                        {journal.status} • {journal.relatedDecision}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              ) : null}
+            </section>
+          )}
         </div>
       </div>
     </section>
