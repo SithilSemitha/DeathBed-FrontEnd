@@ -8,6 +8,14 @@ type DecisionHistoryItem = {
   category: string
 }
 
+type AnalysisHistoryItem = {
+  id: string
+  title: string
+  lastOpened: string
+  relatedDecision: string
+  type: string
+}
+
 const mockDecisionHistory: DecisionHistoryItem[] = [
   {
     id: 'decision-1',
@@ -29,6 +37,30 @@ const mockDecisionHistory: DecisionHistoryItem[] = [
   },
 ]
 
+const mockAnalysisHistory: AnalysisHistoryItem[] = [
+  {
+    id: 'analysis-1',
+    title: 'Future trajectory summary',
+    lastOpened: 'Last opened yesterday',
+    relatedDecision: 'Career change to startup',
+    type: 'Trajectory',
+  },
+  {
+    id: 'analysis-2',
+    title: 'Bias review snapshot',
+    lastOpened: 'Last opened 4 days ago',
+    relatedDecision: 'Move abroad for postgraduate study',
+    type: 'Bias Check',
+  },
+  {
+    id: 'analysis-3',
+    title: 'Future self conversation',
+    lastOpened: 'Last opened 1 week ago',
+    relatedDecision: 'Whether to stay in current relationship',
+    type: 'Chat',
+  },
+]
+
 function fetchMockDecisionHistory(): Promise<DecisionHistoryItem[]> {
   return new Promise((resolve) => {
     window.setTimeout(() => {
@@ -37,10 +69,22 @@ function fetchMockDecisionHistory(): Promise<DecisionHistoryItem[]> {
   })
 }
 
+function fetchMockAnalysisHistory(): Promise<AnalysisHistoryItem[]> {
+  return new Promise((resolve) => {
+    window.setTimeout(() => {
+      resolve(mockAnalysisHistory)
+    }, 900)
+  })
+}
+
 function DashboardRoute() {
   const [decisions, setDecisions] = useState<DecisionHistoryItem[]>([])
   const [isLoadingDecisions, setIsLoadingDecisions] = useState<boolean>(true)
   const [decisionLoadError, setDecisionLoadError] = useState<string>('')
+
+  const [analyses, setAnalyses] = useState<AnalysisHistoryItem[]>([])
+  const [isLoadingAnalyses, setIsLoadingAnalyses] = useState<boolean>(true)
+  const [analysisLoadError, setAnalysisLoadError] = useState<string>('')
 
   useEffect(() => {
     let isMounted = true
@@ -72,7 +116,35 @@ function DashboardRoute() {
       }
     }
 
+    async function loadAnalysisHistory() {
+      setIsLoadingAnalyses(true)
+      setAnalysisLoadError('')
+
+      try {
+        const data = await fetchMockAnalysisHistory()
+
+        if (!isMounted) {
+          return
+        }
+
+        setAnalyses(data)
+      } catch {
+        if (!isMounted) {
+          return
+        }
+
+        setAnalysisLoadError(
+          'Could not load saved analyses right now. Please try again.',
+        )
+      } finally {
+        if (isMounted) {
+          setIsLoadingAnalyses(false)
+        }
+      }
+    }
+
     loadDecisionHistory()
+    loadAnalysisHistory()
 
     return () => {
       isMounted = false
@@ -142,20 +214,34 @@ function DashboardRoute() {
               Quick access to your previous analysis outputs and summaries.
             </p>
 
-            <div className="dashboard-list">
-              <div className="dashboard-list-item">
-                <strong>Future trajectory summary</strong>
-                <span>Last opened yesterday</span>
+            {analysisLoadError ? (
+              <div className="status-banner status-banner-error">
+                {analysisLoadError}
               </div>
-              <div className="dashboard-list-item">
-                <strong>Bias review snapshot</strong>
-                <span>Last opened 4 days ago</span>
+            ) : null}
+
+            {isLoadingAnalyses ? (
+              <div className="dashboard-list">
+                <div className="dashboard-list-item">
+                  <strong>Loading saved analyses...</strong>
+                  <span>Please wait while your analysis history is fetched.</span>
+                </div>
               </div>
-              <div className="dashboard-list-item">
-                <strong>Future self conversation</strong>
-                <span>Last opened 1 week ago</span>
+            ) : null}
+
+            {!isLoadingAnalyses && !analysisLoadError ? (
+              <div className="dashboard-list">
+                {analyses.map((analysis) => (
+                  <div key={analysis.id} className="dashboard-list-item">
+                    <strong>{analysis.title}</strong>
+                    <span>
+                      {analysis.lastOpened} • {analysis.type} •{' '}
+                      {analysis.relatedDecision}
+                    </span>
+                  </div>
+                ))}
               </div>
-            </div>
+            ) : null}
           </section>
 
           <section className="dashboard-card">
