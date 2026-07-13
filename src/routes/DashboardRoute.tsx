@@ -16,6 +16,13 @@ type AnalysisHistoryItem = {
   type: string
 }
 
+type JournalLinkItem = {
+  id: string
+  title: string
+  status: 'Completed' | 'In Progress'
+  relatedDecision: string
+}
+
 const mockDecisionHistory: DecisionHistoryItem[] = [
   {
     id: 'decision-1',
@@ -61,6 +68,21 @@ const mockAnalysisHistory: AnalysisHistoryItem[] = [
   },
 ]
 
+const mockJournalLinks: JournalLinkItem[] = [
+  {
+    id: 'journal-1',
+    title: 'Career change reflection journal',
+    status: 'Completed',
+    relatedDecision: 'Career change to startup',
+  },
+  {
+    id: 'journal-2',
+    title: 'Study abroad decision journal',
+    status: 'In Progress',
+    relatedDecision: 'Move abroad for postgraduate study',
+  },
+]
+
 function fetchMockDecisionHistory(): Promise<DecisionHistoryItem[]> {
   return new Promise((resolve) => {
     window.setTimeout(() => {
@@ -77,6 +99,14 @@ function fetchMockAnalysisHistory(): Promise<AnalysisHistoryItem[]> {
   })
 }
 
+function fetchMockJournalLinks(): Promise<JournalLinkItem[]> {
+  return new Promise((resolve) => {
+    window.setTimeout(() => {
+      resolve(mockJournalLinks)
+    }, 900)
+  })
+}
+
 function DashboardRoute() {
   const [decisions, setDecisions] = useState<DecisionHistoryItem[]>([])
   const [isLoadingDecisions, setIsLoadingDecisions] = useState<boolean>(true)
@@ -85,6 +115,10 @@ function DashboardRoute() {
   const [analyses, setAnalyses] = useState<AnalysisHistoryItem[]>([])
   const [isLoadingAnalyses, setIsLoadingAnalyses] = useState<boolean>(true)
   const [analysisLoadError, setAnalysisLoadError] = useState<string>('')
+
+  const [journals, setJournals] = useState<JournalLinkItem[]>([])
+  const [isLoadingJournals, setIsLoadingJournals] = useState<boolean>(true)
+  const [journalLoadError, setJournalLoadError] = useState<string>('')
 
   useEffect(() => {
     let isMounted = true
@@ -143,8 +177,36 @@ function DashboardRoute() {
       }
     }
 
+    async function loadJournalLinks() {
+      setIsLoadingJournals(true)
+      setJournalLoadError('')
+
+      try {
+        const data = await fetchMockJournalLinks()
+
+        if (!isMounted) {
+          return
+        }
+
+        setJournals(data)
+      } catch {
+        if (!isMounted) {
+          return
+        }
+
+        setJournalLoadError(
+          'Could not load linked journals right now. Please try again.',
+        )
+      } finally {
+        if (isMounted) {
+          setIsLoadingJournals(false)
+        }
+      }
+    }
+
     loadDecisionHistory()
     loadAnalysisHistory()
+    loadJournalLinks()
 
     return () => {
       isMounted = false
@@ -250,16 +312,37 @@ function DashboardRoute() {
               Your reflection history and journal connections will appear here.
             </p>
 
-            <div className="dashboard-list">
-              <div className="dashboard-list-item">
-                <strong>Pre-mortem journal draft</strong>
-                <span>In progress</span>
+            {journalLoadError ? (
+              <div className="status-banner status-banner-error">
+                {journalLoadError}
               </div>
-              <div className="dashboard-list-item">
-                <strong>Completed reflection export</strong>
-                <span>PDF ready</span>
+            ) : null}
+
+            {isLoadingJournals ? (
+              <div className="dashboard-list">
+                <div className="dashboard-list-item">
+                  <strong>Loading linked journals...</strong>
+                  <span>Please wait while your journal links are fetched.</span>
+                </div>
               </div>
-            </div>
+            ) : null}
+
+            {!isLoadingJournals && !journalLoadError ? (
+              <div className="dashboard-list">
+                {journals.map((journal) => (
+                  <Link
+                    key={journal.id}
+                    className="dashboard-list-item dashboard-list-link"
+                    to={`/journals/${journal.id}`}
+                  >
+                    <strong>{journal.title}</strong>
+                    <span>
+                      {journal.status} • {journal.relatedDecision}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            ) : null}
           </section>
         </div>
       </div>

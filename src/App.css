@@ -1940,3 +1940,18 @@ select.field-input {
 .stories-results-step-label {
   margin-bottom: 10px;
 }
+
+.dashboard-list-link {
+  text-decoration: none;
+  transition:
+    border-color 0.2s ease,
+    transform 0.15s ease,
+    background 0.2s ease;
+}
+
+.dashboard-list-link:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+  background: rgba(45, 55, 72, 0.68);
+  text-decoration: none;
+}
