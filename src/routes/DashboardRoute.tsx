@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { clearStoredSession } from '../lib/auth'
+import { clearStoredSession, getStoredUser, type StoredUser } from '../lib/auth'
 
 type DecisionHistoryItem = {
   id: string
@@ -128,6 +128,8 @@ function triggerMockDeleteRequest(decisionId: string): Promise<void> {
 function DashboardRoute() {
   const navigate = useNavigate()
 
+  const [storedUser, setStoredUser] = useState<StoredUser | null>(null)
+
   const [activeView, setActiveView] = useState<DashboardView>('all')
 
   const [decisions, setDecisions] = useState<DecisionHistoryItem[]>([])
@@ -147,6 +149,10 @@ function DashboardRoute() {
   const [deleteNotice, setDeleteNotice] = useState<string>('')
   const [deleteRequestError, setDeleteRequestError] = useState<string>('')
   const [isDeletingDecision, setIsDeletingDecision] = useState<boolean>(false)
+
+  useEffect(() => {
+    setStoredUser(getStoredUser())
+  }, [])
 
   useEffect(() => {
     let isMounted = true
@@ -291,6 +297,11 @@ function DashboardRoute() {
     navigate('/login')
   }
 
+  const displayName =
+    typeof storedUser?.email === 'string' && storedUser.email.length > 0
+      ? storedUser.email
+      : 'your account'
+
   return (
     <section className="screen-shell">
       <div className="screen-backdrop" />
@@ -301,8 +312,9 @@ function DashboardRoute() {
             <p className="step-label">Dashboard</p>
             <h1 className="screen-title">Your decision journey</h1>
             <p className="screen-subtitle">
-              This dashboard is the home for your saved decisions, linked
-              analyses, and journals over time.
+              Signed in as <strong>{displayName}</strong>. This dashboard is the
+              home for your saved decisions, linked analyses, and journals over
+              time.
             </p>
           </div>
 
