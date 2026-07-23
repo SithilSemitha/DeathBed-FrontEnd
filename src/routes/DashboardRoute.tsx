@@ -256,16 +256,19 @@ function DashboardRoute() {
       return
     }
 
+    const deletedDecision = decisionToDelete
+
     setDeleteRequestError('')
     setDeleteNotice('')
     setIsDeletingDecision(true)
 
     try {
-      await triggerMockDeleteRequest(decisionToDelete.id)
+      await triggerMockDeleteRequest(deletedDecision.id)
 
-      setDeleteNotice(
-        `Delete request submitted for "${decisionToDelete.title}". Actual removal will be handled in the next subtask.`,
+      setDecisions((current) =>
+        current.filter((decision) => decision.id !== deletedDecision.id),
       )
+      setDeleteNotice(`"${deletedDecision.title}" was removed from the dashboard.`)
       setDecisionToDelete(null)
     } catch (error) {
       setDeleteRequestError(
@@ -372,27 +375,34 @@ function DashboardRoute() {
 
               {!isLoadingDecisions && !decisionLoadError ? (
                 <div className="dashboard-list">
-                  {decisions.map((decision) => (
-                    <article
-                      key={decision.id}
-                      className="dashboard-list-item dashboard-decision-item"
-                    >
-                      <div className="dashboard-decision-copy">
-                        <strong>{decision.title}</strong>
-                        <span>
-                          {decision.savedAt} • {decision.category}
-                        </span>
-                      </div>
-
-                      <button
-                        type="button"
-                        className="button button-danger button-danger-compact"
-                        onClick={() => openDeleteConfirmation(decision)}
+                  {decisions.length > 0 ? (
+                    decisions.map((decision) => (
+                      <article
+                        key={decision.id}
+                        className="dashboard-list-item dashboard-decision-item"
                       >
-                        Delete
-                      </button>
-                    </article>
-                  ))}
+                        <div className="dashboard-decision-copy">
+                          <strong>{decision.title}</strong>
+                          <span>
+                            {decision.savedAt} • {decision.category}
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          className="button button-danger button-danger-compact"
+                          onClick={() => openDeleteConfirmation(decision)}
+                        >
+                          Delete
+                        </button>
+                      </article>
+                    ))
+                  ) : (
+                    <div className="dashboard-list-item">
+                      <strong>No saved decisions</strong>
+                      <span>Your deleted decisions no longer appear here.</span>
+                    </div>
+                  )}
                 </div>
               ) : null}
             </section>
@@ -486,8 +496,7 @@ function DashboardRoute() {
               <p className="modal-copy">
                 Are you sure you want to delete{' '}
                 <strong>{decisionToDelete.title}</strong>? This request will be
-                submitted now, but the actual dashboard removal will happen in
-                the next subtask.
+                submitted now and the decision will be removed from your dashboard.
               </p>
 
               {deleteRequestError ? (
