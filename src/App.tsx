@@ -14,6 +14,7 @@ import RegretRatingRoute from './routes/RegretRatingRoute'
 import JournalHistoryRoute from './routes/JournalHistoryRoute'
 import JournalDetailRoute from './routes/JournalDetailRoute'
 import SimilarStoriesRoute from './routes/SimilarStoriesRoute'
+import FollowUpPreferenceRoute from './routes/FollowUpPreferenceRoute'
 import './App.css'
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
         <Route path="/journals" element={<JournalHistoryRoute />} />
         <Route path="/journals/:journalId" element={<JournalDetailRoute />} />
         <Route path="/similar-stories" element={<SimilarStoriesRoute />} />
+        <Route path="/follow-up-preferences" element={<FollowUpPreferenceRoute />} />
       </Routes>
     </BrowserRouter>
   )
