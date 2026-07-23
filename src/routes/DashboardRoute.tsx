@@ -1,129 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import {
+  getOrSeedSavedDashboardData,
+  saveDashboardData,
+  type AnalysisHistoryItem,
+  type DecisionHistoryItem,
+  type JournalLinkItem,
+} from '../lib/accountData'
 import { clearStoredSession, getStoredUser, type StoredUser } from '../lib/auth'
 
-type DecisionHistoryItem = {
-  id: string
-  title: string
-  savedAt: string
-  category: string
-}
-
-type AnalysisHistoryItem = {
-  id: string
-  title: string
-  lastOpened: string
-  relatedDecision: string
-  type: string
-}
-
-type JournalLinkItem = {
-  id: string
-  title: string
-  status: 'Completed' | 'In Progress'
-  relatedDecision: string
-}
-
 type DashboardView = 'all' | 'decisions' | 'analyses' | 'journals'
-
-const mockDecisionHistory: DecisionHistoryItem[] = [
-  {
-    id: 'decision-1',
-    title: 'Career change to startup',
-    savedAt: 'Saved 2 days ago',
-    category: 'Career',
-  },
-  {
-    id: 'decision-2',
-    title: 'Move abroad for postgraduate study',
-    savedAt: 'Saved 1 week ago',
-    category: 'Education',
-  },
-  {
-    id: 'decision-3',
-    title: 'Whether to stay in current relationship',
-    savedAt: 'Saved 3 weeks ago',
-    category: 'Relationship',
-  },
-]
-
-const mockAnalysisHistory: AnalysisHistoryItem[] = [
-  {
-    id: 'analysis-1',
-    title: 'Future trajectory summary',
-    lastOpened: 'Last opened yesterday',
-    relatedDecision: 'Career change to startup',
-    type: 'Trajectory',
-  },
-  {
-    id: 'analysis-2',
-    title: 'Bias review snapshot',
-    lastOpened: 'Last opened 4 days ago',
-    relatedDecision: 'Move abroad for postgraduate study',
-    type: 'Bias Check',
-  },
-  {
-    id: 'analysis-3',
-    title: 'Future self conversation',
-    lastOpened: 'Last opened 1 week ago',
-    relatedDecision: 'Whether to stay in current relationship',
-    type: 'Chat',
-  },
-]
-
-const mockJournalLinks: JournalLinkItem[] = [
-  {
-    id: 'journal-1',
-    title: 'Career change reflection journal',
-    status: 'Completed',
-    relatedDecision: 'Career change to startup',
-  },
-  {
-    id: 'journal-2',
-    title: 'Study abroad decision journal',
-    status: 'In Progress',
-    relatedDecision: 'Move abroad for postgraduate study',
-  },
-]
-
-function fetchMockDecisionHistory(): Promise<DecisionHistoryItem[]> {
-  return new Promise((resolve) => {
-    window.setTimeout(() => {
-      resolve(mockDecisionHistory)
-    }, 900)
-  })
-}
-
-function fetchMockAnalysisHistory(): Promise<AnalysisHistoryItem[]> {
-  return new Promise((resolve) => {
-    window.setTimeout(() => {
-      resolve(mockAnalysisHistory)
-    }, 900)
-  })
-}
-
-function fetchMockJournalLinks(): Promise<JournalLinkItem[]> {
-  return new Promise((resolve) => {
-    window.setTimeout(() => {
-      resolve(mockJournalLinks)
-    }, 900)
-  })
-}
-
-function triggerMockDeleteRequest(decisionId: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    window.setTimeout(() => {
-      if (decisionId === 'decision-error-demo') {
-        reject(
-          new Error('Could not delete the decision right now. Please try again.'),
-        )
-        return
-      }
-
-      resolve()
-    }, 900)
-  })
-}
 
 function DashboardRoute() {
   const navigate = useNavigate()
@@ -151,24 +37,49 @@ function DashboardRoute() {
   const [isDeletingDecision, setIsDeletingDecision] = useState<boolean>(false)
 
   useEffect(() => {
-    setStoredUser(getStoredUser())
+    const user = getStoredUser()
+    setStoredUser(user)
   }, [])
 
   useEffect(() => {
     let isMounted = true
 
-    async function loadDecisionHistory() {
+    async function loadAccountDashboardData() {
       setIsLoadingDecisions(true)
       setDecisionLoadError('')
+      setIsLoadingAnalyses(true)
+      setAnalysisLoadError('')
+      setIsLoadingJournals(true)
+      setJournalLoadError('')
+
+      const email =
+        typeof getStoredUser()?.email === 'string' ? getStoredUser()?.email : ''
+
+      if (!email) {
+        if (!isMounted) {
+          return
+        }
+
+        setDecisionLoadError('No signed-in user found.')
+        setAnalysisLoadError('No signed-in user found.')
+        setJournalLoadError('No signed-in user found.')
+        setIsLoadingDecisions(false)
+        setIsLoadingAnalyses(false)
+        setIsLoadingJournals(false)
+        return
+      }
 
       try {
-        const data = await fetchMockDecisionHistory()
+        await new Promise((resolve) => window.setTimeout(resolve, 900))
+        const savedData = getOrSeedSavedDashboardData(email)
 
         if (!isMounted) {
           return
         }
 
-        setDecisions(data)
+        setDecisions(savedData.decisions)
+        setAnalyses(savedData.analyses)
+        setJournals(savedData.journals)
       } catch {
         if (!isMounted) {
           return
@@ -177,70 +88,22 @@ function DashboardRoute() {
         setDecisionLoadError(
           'Could not load past decisions right now. Please try again.',
         )
-      } finally {
-        if (isMounted) {
-          setIsLoadingDecisions(false)
-        }
-      }
-    }
-
-    async function loadAnalysisHistory() {
-      setIsLoadingAnalyses(true)
-      setAnalysisLoadError('')
-
-      try {
-        const data = await fetchMockAnalysisHistory()
-
-        if (!isMounted) {
-          return
-        }
-
-        setAnalyses(data)
-      } catch {
-        if (!isMounted) {
-          return
-        }
-
         setAnalysisLoadError(
           'Could not load saved analyses right now. Please try again.',
         )
-      } finally {
-        if (isMounted) {
-          setIsLoadingAnalyses(false)
-        }
-      }
-    }
-
-    async function loadJournalLinks() {
-      setIsLoadingJournals(true)
-      setJournalLoadError('')
-
-      try {
-        const data = await fetchMockJournalLinks()
-
-        if (!isMounted) {
-          return
-        }
-
-        setJournals(data)
-      } catch {
-        if (!isMounted) {
-          return
-        }
-
         setJournalLoadError(
           'Could not load linked journals right now. Please try again.',
         )
       } finally {
         if (isMounted) {
+          setIsLoadingDecisions(false)
+          setIsLoadingAnalyses(false)
           setIsLoadingJournals(false)
         }
       }
     }
 
-    loadDecisionHistory()
-    loadAnalysisHistory()
-    loadJournalLinks()
+    loadAccountDashboardData()
 
     return () => {
       isMounted = false
@@ -274,11 +137,25 @@ function DashboardRoute() {
     setIsDeletingDecision(true)
 
     try {
-      await triggerMockDeleteRequest(deletedDecision.id)
+      await new Promise((resolve) => window.setTimeout(resolve, 900))
 
-      setDecisions((current) =>
-        current.filter((decision) => decision.id !== deletedDecision.id),
+      const nextDecisions = decisions.filter(
+        (decision) => decision.id !== deletedDecision.id,
       )
+
+      setDecisions(nextDecisions)
+
+      const email =
+        typeof storedUser?.email === 'string' ? storedUser.email : undefined
+
+      if (email) {
+        saveDashboardData(email, {
+          decisions: nextDecisions,
+          analyses,
+          journals,
+        })
+      }
+
       setDeleteNotice(`"${deletedDecision.title}" was removed from the dashboard.`)
       setDecisionToDelete(null)
     } catch (error) {
