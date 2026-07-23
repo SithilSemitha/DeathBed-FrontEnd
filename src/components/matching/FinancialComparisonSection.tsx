@@ -17,6 +17,9 @@ interface FinancialComparisonSectionProps {
   scoreLabel: string
   rangeLabel: string
   insightLabel: string
+  confidenceScore: number
+  confidenceLevel: 'Low' | 'Moderate' | 'High'
+  confidenceExplanation: string
   choiceA: FinancialChoice
   choiceB: FinancialChoice
   quickSummary: string
@@ -38,6 +41,9 @@ function FinancialComparisonSection({
   scoreLabel,
   rangeLabel,
   insightLabel,
+  confidenceScore,
+  confidenceLevel,
+  confidenceExplanation,
   choiceA,
   choiceB,
   quickSummary,
@@ -99,6 +105,19 @@ function FinancialComparisonSection({
 
       {showFinancial ? (
         <>
+          <div className="confidence-panel">
+            <div className="confidence-header">
+              <div>
+                <p className="confidence-label">Confidence score</p>
+                <h3 className="confidence-title">
+                  {confidenceScore} / 100 — {confidenceLevel} confidence
+                </h3>
+              </div>
+              <span className="confidence-badge">{confidenceLevel}</span>
+            </div>
+            <p className="confidence-copy">{confidenceExplanation}</p>
+          </div>
+
           <div className="comparison-meta-panel">
             <p className="comparison-meta-label">{scoreLabel}</p>
             <p className="comparison-meta-copy">{rangeLabel}</p>
@@ -108,7 +127,9 @@ function FinancialComparisonSection({
             <article className="comparison-card comparison-card-a">
               <p className="comparison-card-label">{choiceA.title}</p>
               <h3 className="comparison-card-title">{choiceA.label}</h3>
-              <p className="comparison-direction-label">{choiceA.directionLabel}</p>
+              <p className="comparison-direction-label">
+                {choiceA.directionLabel}
+              </p>
               <div className="comparison-score-row">
                 <span className="comparison-score-value">{choiceA.value}</span>
                 <span className="comparison-score-unit">/ 100</span>
@@ -126,7 +147,9 @@ function FinancialComparisonSection({
             <article className="comparison-card comparison-card-b">
               <p className="comparison-card-label">{choiceB.title}</p>
               <h3 className="comparison-card-title">{choiceB.label}</h3>
-              <p className="comparison-direction-label">{choiceB.directionLabel}</p>
+              <p className="comparison-direction-label">
+                {choiceB.directionLabel}
+              </p>
               <div className="comparison-score-row">
                 <span className="comparison-score-value">{choiceB.value}</span>
                 <span className="comparison-score-unit">/ 100</span>

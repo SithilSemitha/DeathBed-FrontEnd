@@ -35,6 +35,9 @@ export type FinancialComparisonData = {
   scoreLabel: string
   rangeLabel: string
   insightLabel: string
+  confidenceScore: number
+  confidenceLevel: 'Low' | 'Moderate' | 'High'
+  confidenceExplanation: string
   choiceA: FinancialChoice
   choiceB: FinancialChoice
   quickSummary: string
@@ -45,6 +48,11 @@ export type ComparisonApiShape = {
   scoreLabel: string
   rangeLabel: string
   insightLabel: string
+  confidence: {
+    score: number
+    level: 'Low' | 'Moderate' | 'High'
+    explanation: string
+  }
   choices: {
     choiceA: FinancialChoice
     choiceB: FinancialChoice
@@ -120,6 +128,12 @@ export const mockFinancialComparisonApi: ComparisonApiShape = {
   scoreLabel: 'Estimated financial outlook',
   rangeLabel: '0 = weaker short-term outcome, 100 = stronger projected upside',
   insightLabel: 'What this score suggests',
+  confidence: {
+    score: 78,
+    level: 'Moderate',
+    explanation:
+      'Based on the current mock dataset, the platform has enough similar-profile information to give a useful directional comparison, but not enough to call it highly certain.',
+  },
   choices: {
     choiceA: {
       title: 'Choice A',
@@ -230,6 +244,9 @@ export function prepareFinancialComparisonData(
     scoreLabel: data.scoreLabel,
     rangeLabel: data.rangeLabel,
     insightLabel: data.insightLabel,
+    confidenceScore: data.confidence.score,
+    confidenceLevel: data.confidence.level,
+    confidenceExplanation: data.confidence.explanation,
     choiceA: data.choices.choiceA,
     choiceB: data.choices.choiceB,
     quickSummary: data.quickSummary,

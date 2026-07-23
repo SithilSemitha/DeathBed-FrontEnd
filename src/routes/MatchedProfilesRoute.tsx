@@ -300,11 +300,14 @@ function MatchedProfilesRoute() {
           </section>
         </div>
 
-        <FinancialComparisonSection
+                <FinancialComparisonSection
           dimension={financialComparison.dimension}
           scoreLabel={financialComparison.scoreLabel}
           rangeLabel={financialComparison.rangeLabel}
           insightLabel={financialComparison.insightLabel}
+          confidenceScore={financialComparison.confidenceScore}
+          confidenceLevel={financialComparison.confidenceLevel}
+          confidenceExplanation={financialComparison.confidenceExplanation}
           choiceA={financialComparison.choiceA}
           choiceB={financialComparison.choiceB}
           quickSummary={financialComparison.quickSummary}
