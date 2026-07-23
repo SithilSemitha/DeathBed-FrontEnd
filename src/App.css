@@ -1988,3 +1988,41 @@ select.field-input {
   border-color: var(--accent);
   background: rgba(124, 58, 237, 0.24);
 }
+
+.dashboard-decision-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+}
+
+.dashboard-decision-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.button-danger {
+  border: 1px solid rgba(251, 113, 133, 0.35);
+  background: rgba(127, 29, 29, 0.18);
+  color: #fecdd3;
+}
+
+.button-danger:hover {
+  border-color: rgba(251, 113, 133, 0.55);
+  background: rgba(127, 29, 29, 0.3);
+}
+
+.button-danger-compact {
+  min-height: 40px;
+  padding: 0 14px;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .dashboard-decision-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

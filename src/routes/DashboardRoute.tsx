@@ -306,12 +306,21 @@ function DashboardRoute() {
               {!isLoadingDecisions && !decisionLoadError ? (
                 <div className="dashboard-list">
                   {decisions.map((decision) => (
-                    <div key={decision.id} className="dashboard-list-item">
-                      <strong>{decision.title}</strong>
-                      <span>
-                        {decision.savedAt} • {decision.category}
-                      </span>
-                    </div>
+                    <article key={decision.id} className="dashboard-list-item dashboard-decision-item">
+                      <div className="dashboard-decision-copy">
+                        <strong>{decision.title}</strong>
+                        <span>
+                          {decision.savedAt} • {decision.category}
+                        </span>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="button button-danger button-danger-compact"
+                      >
+                        Delete
+                      </button>
+                    </article>
                   ))}
                 </div>
               ) : null}
