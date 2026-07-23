@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import FinancialComparisonSection from '../components/matching/FinancialComparisonSection'
 import {
@@ -13,10 +13,48 @@ import {
   type MatchFilters,
 } from '../lib/matches'
 
+type ComparisonDimension =
+  | 'financial'
+  | 'emotional'
+  | 'relational'
+  | 'professional'
+  | 'health'
+
+const DIMENSION_STORAGE_KEY = 'deathbed.selectedComparisonDimensions'
+
 function MatchedProfilesRoute() {
   const [filters, setFilters] = useState<MatchFilters>(initialMatchFilters)
   const [appliedFilters, setAppliedFilters] =
     useState<MatchFilters>(initialMatchFilters)
+  const [selectedDimensions, setSelectedDimensions] = useState<
+    ComparisonDimension[]
+  >(['financial', 'emotional', 'relational'])
+  const [dimensionError, setDimensionError] = useState<string>('')
+
+  useEffect(() => {
+    const stored = localStorage.getItem(DIMENSION_STORAGE_KEY)
+
+    if (!stored) {
+      return
+    }
+
+    try {
+      const parsed = JSON.parse(stored) as ComparisonDimension[]
+
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        setSelectedDimensions(parsed)
+      }
+    } catch {
+      // ignore invalid local storage
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem(
+      DIMENSION_STORAGE_KEY,
+      JSON.stringify(selectedDimensions),
+    )
+  }, [selectedDimensions])
 
   const ageRangeError = useMemo(() => {
     if (!filters.minAge || !filters.maxAge) {
@@ -71,6 +109,27 @@ function MatchedProfilesRoute() {
   const handleReset = () => {
     setFilters(initialMatchFilters)
     setAppliedFilters(initialMatchFilters)
+  }
+
+  const handleToggleDimension = (dimension: ComparisonDimension) => {
+    setSelectedDimensions((current) => {
+      const isSelected = current.includes(dimension)
+
+      if (isSelected) {
+        if (current.length === 1) {
+          setDimensionError('At least one dimension must remain selected.')
+          return current
+        }
+
+        const next = current.filter((item) => item !== dimension)
+        setDimensionError('')
+        return next
+      }
+
+      const next = [...current, dimension]
+      setDimensionError('')
+      return next
+    })
   }
 
   return (
@@ -249,6 +308,9 @@ function MatchedProfilesRoute() {
           choiceA={financialComparison.choiceA}
           choiceB={financialComparison.choiceB}
           quickSummary={financialComparison.quickSummary}
+          selectedDimensions={selectedDimensions}
+          onToggleDimension={handleToggleDimension}
+          dimensionError={dimensionError}
         />
       </div>
     </section>
