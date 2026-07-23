@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import RateLimitNotice from '../components/shared/RateLimitNotice'
 
 type DetectedBias = {
   name: string
@@ -46,7 +47,9 @@ function runMockBiasCheck(text: string): Promise<DetectedBias[]> {
   return new Promise((resolve, reject) => {
     window.setTimeout(() => {
       if (text.toLowerCase().includes('error-demo')) {
-        reject(new Error('Bias analysis is temporarily unavailable. Please try again.'))
+        reject(
+          new Error('Bias analysis is temporarily unavailable. Please try again.'),
+        )
         return
       }
 
@@ -61,6 +64,7 @@ function BiasCheckRoute() {
   const [hasCheckedBiases, setHasCheckedBiases] = useState<boolean>(false)
   const [isCheckingBiases, setIsCheckingBiases] = useState<boolean>(false)
   const [requestError, setRequestError] = useState<string>('')
+  const [rateLimitSeconds, setRateLimitSeconds] = useState<number>(0)
 
   const reasoningLength = reasoningText.trim().length
 
@@ -68,14 +72,42 @@ function BiasCheckRoute() {
     return reasoningLength >= 50
   }, [reasoningLength])
 
+  const isRateLimited = rateLimitSeconds > 0
+
+  useEffect(() => {
+    if (rateLimitSeconds <= 0) {
+      return
+    }
+
+    const timer = window.setInterval(() => {
+      setRateLimitSeconds((current) => {
+        if (current <= 1) {
+          window.clearInterval(timer)
+          return 0
+        }
+
+        return current - 1
+      })
+    }, 1000)
+
+    return () => window.clearInterval(timer)
+  }, [rateLimitSeconds])
+
   const handleCheckBiases = async () => {
-    if (!canCheckBiases) {
+    if (!canCheckBiases || isRateLimited) {
       return
     }
 
     setRequestError('')
     setIsCheckingBiases(true)
     setHasCheckedBiases(false)
+
+    if (reasoningText.toLowerCase().includes('rate-limit-demo')) {
+      setBiasResults([])
+      setIsCheckingBiases(false)
+      setRateLimitSeconds(10)
+      return
+    }
 
     try {
       const results = await runMockBiasCheck(reasoningText.trim())
@@ -133,6 +165,11 @@ function BiasCheckRoute() {
               onSubmit={(event) => event.preventDefault()}
               noValidate
             >
+              <RateLimitNotice
+                secondsRemaining={rateLimitSeconds}
+                featureLabel="Bias analysis"
+              />
+
               {requestError ? (
                 <div className="status-banner status-banner-error">
                   {requestError}
@@ -162,10 +199,14 @@ function BiasCheckRoute() {
                 <button
                   type="button"
                   className="button button-primary"
-                  disabled={!canCheckBiases || isCheckingBiases}
+                  disabled={!canCheckBiases || isCheckingBiases || isRateLimited}
                   onClick={handleCheckBiases}
                 >
-                  {isCheckingBiases ? 'Checking for Biases...' : 'Check for Biases'}
+                  {isCheckingBiases
+                    ? 'Checking for Biases...'
+                    : isRateLimited
+                      ? `Retry in ${rateLimitSeconds}s`
+                      : 'Check for Biases'}
                 </button>
               </div>
             </form>

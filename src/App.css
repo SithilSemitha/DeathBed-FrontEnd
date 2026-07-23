@@ -2239,3 +2239,24 @@ select.field-input {
     font-size: 0.95rem;
   }
 }
+
+.rate-limit-panel {
+  margin: 0 0 18px;
+  padding: 16px 18px;
+  border: 1px solid rgba(250, 204, 21, 0.28);
+  border-radius: 16px;
+  background: rgba(120, 53, 15, 0.18);
+}
+
+.rate-limit-title {
+  margin: 0 0 8px;
+  color: #fde68a;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.rate-limit-copy {
+  margin: 0;
+  color: #fef3c7;
+  line-height: 1.6;
+}

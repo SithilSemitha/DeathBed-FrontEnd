@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import RateLimitNotice from '../components/shared/RateLimitNotice'
 
 type SimilarStory = {
   id: string
@@ -35,6 +36,7 @@ const mockSimilarStories: SimilarStory[] = [
 function SimilarStoriesRoute() {
   const [decisionContext, setDecisionContext] = useState<string>('')
   const [hasSearched, setHasSearched] = useState<boolean>(false)
+  const [rateLimitSeconds, setRateLimitSeconds] = useState<number>(0)
 
   const contextLength = decisionContext.trim().length
 
@@ -42,8 +44,35 @@ function SimilarStoriesRoute() {
     return contextLength >= 20
   }, [contextLength])
 
+  const isRateLimited = rateLimitSeconds > 0
+
+  useEffect(() => {
+    if (rateLimitSeconds <= 0) {
+      return
+    }
+
+    const timer = window.setInterval(() => {
+      setRateLimitSeconds((current) => {
+        if (current <= 1) {
+          window.clearInterval(timer)
+          return 0
+        }
+
+        return current - 1
+      })
+    }, 1000)
+
+    return () => window.clearInterval(timer)
+  }, [rateLimitSeconds])
+
   const handleSearch = () => {
-    if (!canSearch) {
+    if (!canSearch || isRateLimited) {
+      return
+    }
+
+    if (decisionContext.toLowerCase().includes('rate-limit-demo')) {
+      setHasSearched(false)
+      setRateLimitSeconds(10)
       return
     }
 
@@ -91,6 +120,11 @@ function SimilarStoriesRoute() {
               </p>
             </div>
 
+            <RateLimitNotice
+              secondsRemaining={rateLimitSeconds}
+              featureLabel="Similar story search"
+            />
+
             <div className="stories-search-box">
               <label className="field-group">
                 <span className="field-label">Decision context</span>
@@ -113,10 +147,12 @@ function SimilarStoriesRoute() {
                 <button
                   type="button"
                   className="button button-primary"
-                  disabled={!canSearch}
+                  disabled={!canSearch || isRateLimited}
                   onClick={handleSearch}
                 >
-                  Find Similar Stories
+                  {isRateLimited
+                    ? `Retry in ${rateLimitSeconds}s`
+                    : 'Find Similar Stories'}
                 </button>
               </div>
             </div>
