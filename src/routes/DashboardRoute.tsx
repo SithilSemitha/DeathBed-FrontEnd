@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { clearStoredSession } from '../lib/auth'
 
 type DecisionHistoryItem = {
   id: string
@@ -113,7 +114,9 @@ function triggerMockDeleteRequest(decisionId: string): Promise<void> {
   return new Promise((resolve, reject) => {
     window.setTimeout(() => {
       if (decisionId === 'decision-error-demo') {
-        reject(new Error('Could not delete the decision right now. Please try again.'))
+        reject(
+          new Error('Could not delete the decision right now. Please try again.'),
+        )
         return
       }
 
@@ -123,6 +126,8 @@ function triggerMockDeleteRequest(decisionId: string): Promise<void> {
 }
 
 function DashboardRoute() {
+  const navigate = useNavigate()
+
   const [activeView, setActiveView] = useState<DashboardView>('all')
 
   const [decisions, setDecisions] = useState<DecisionHistoryItem[]>([])
@@ -281,6 +286,11 @@ function DashboardRoute() {
     }
   }
 
+  const handleLogout = () => {
+    clearStoredSession()
+    navigate('/login')
+  }
+
   return (
     <section className="screen-shell">
       <div className="screen-backdrop" />
@@ -296,9 +306,19 @@ function DashboardRoute() {
             </p>
           </div>
 
-          <Link className="button button-primary button-link" to="/decisions/new">
-            Start New Decision
-          </Link>
+          <div className="dashboard-header-actions">
+            <Link className="button button-primary button-link" to="/decisions/new">
+              Start New Decision
+            </Link>
+
+            <button
+              type="button"
+              className="button button-secondary"
+              onClick={handleLogout}
+            >
+              Log out
+            </button>
+          </div>
         </div>
 
         {deleteNotice ? (

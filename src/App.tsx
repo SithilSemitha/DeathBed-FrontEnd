@@ -1,4 +1,7 @@
+import type { ReactNode } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+
+import { hasStoredSession } from './lib/auth'
 import OnboardingRoute from './routes/OnboardingRoute'
 import DecisionInputRoute from './routes/DecisionInputRoute'
 import DataUsageRoute from './routes/DataUsageRoute'
@@ -17,27 +20,168 @@ import SimilarStoriesRoute from './routes/SimilarStoriesRoute'
 import FollowUpPreferenceRoute from './routes/FollowUpPreferenceRoute'
 import './App.css'
 
+function ProtectedRoute({ children }: { children: ReactNode }) {
+  return hasStoredSession() ? <>{children}</> : <Navigate to="/login" replace />
+}
+
+function PublicOnlyRoute({ children }: { children: ReactNode }) {
+  return hasStoredSession() ? (
+    <Navigate to="/dashboard" replace />
+  ) : (
+    <>{children}</>
+  )
+}
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route
+          path="/"
+          element={
+            <Navigate
+              to={hasStoredSession() ? '/dashboard' : '/login'}
+              replace
+            />
+          }
+        />
+
         <Route path="/auth/callback" element={<AuthCallbackRoute />} />
-        <Route path="/onboarding" element={<OnboardingRoute />} />
-        <Route path="/signup" element={<SignUpRoute />} />
-        <Route path="/data-usage" element={<DataUsageRoute />} />
-        <Route path="/login" element={<LoginRoute />} />
-        <Route path="/forgot-password" element={<ForgotPasswordRoute />} />
-        <Route path="/reset-password" element={<ResetPasswordRoute />} />
-        <Route path="/dashboard" element={<DashboardRoute />} />
-        <Route path="/decisions/new" element={<DecisionInputRoute />} />
-        <Route path="/matches" element={<MatchedProfilesRoute />} />
-        <Route path="/bias-check" element={<BiasCheckRoute />} />
-        <Route path="/regret-rating" element={<RegretRatingRoute />} />
-        <Route path="/journals" element={<JournalHistoryRoute />} />
-        <Route path="/journals/:journalId" element={<JournalDetailRoute />} />
-        <Route path="/similar-stories" element={<SimilarStoriesRoute />} />
-        <Route path="/follow-up-preferences" element={<FollowUpPreferenceRoute />} />
+
+        <Route
+          path="/login"
+          element={
+            <PublicOnlyRoute>
+              <LoginRoute />
+            </PublicOnlyRoute>
+          }
+        />
+
+        <Route
+          path="/signup"
+          element={
+            <PublicOnlyRoute>
+              <SignUpRoute />
+            </PublicOnlyRoute>
+          }
+        />
+
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicOnlyRoute>
+              <ForgotPasswordRoute />
+            </PublicOnlyRoute>
+          }
+        />
+
+        <Route
+          path="/reset-password"
+          element={
+            <PublicOnlyRoute>
+              <ResetPasswordRoute />
+            </PublicOnlyRoute>
+          }
+        />
+
+        <Route
+          path="/onboarding"
+          element={
+            <ProtectedRoute>
+              <OnboardingRoute />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/data-usage"
+          element={
+            <ProtectedRoute>
+              <DataUsageRoute />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardRoute />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/decisions/new"
+          element={
+            <ProtectedRoute>
+              <DecisionInputRoute />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/matches"
+          element={
+            <ProtectedRoute>
+              <MatchedProfilesRoute />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/bias-check"
+          element={
+            <ProtectedRoute>
+              <BiasCheckRoute />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/regret-rating"
+          element={
+            <ProtectedRoute>
+              <RegretRatingRoute />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/journals"
+          element={
+            <ProtectedRoute>
+              <JournalHistoryRoute />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/journals/:journalId"
+          element={
+            <ProtectedRoute>
+              <JournalDetailRoute />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/similar-stories"
+          element={
+            <ProtectedRoute>
+              <SimilarStoriesRoute />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/follow-up-preferences"
+          element={
+            <ProtectedRoute>
+              <FollowUpPreferenceRoute />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   )

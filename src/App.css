@@ -2512,3 +2512,18 @@ select.field-input {
   color: var(--text-secondary);
   line-height: 1.6;
 }
+
+.dashboard-header-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .dashboard-header-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
