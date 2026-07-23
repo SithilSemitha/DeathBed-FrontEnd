@@ -2075,3 +2075,167 @@ select.field-input {
     align-items: stretch;
   }
 }
+
+@media (max-width: 375px) {
+  .screen-content,
+  .dashboard-content {
+    width: 100%;
+    padding: 20px 12px;
+  }
+
+  .auth-card,
+  .dashboard-card,
+  .filter-panel,
+  .match-results-card,
+  .decision-side-card,
+  .bias-side-card,
+  .regret-side-card,
+  .journal-history-header-card,
+  .journal-history-card,
+  .journal-history-side-card,
+  .stories-main-card,
+  .stories-side-card,
+  .comparison-section,
+  .modal-card {
+    padding: 18px 16px;
+    border-radius: 18px;
+  }
+
+  .dashboard-header,
+  .decision-footer,
+  .bias-footer,
+  .regret-footer,
+  .stories-search-footer,
+  .match-results-header,
+  .journal-history-card-top,
+  .journal-detail-header-actions,
+  .modal-actions,
+  .understanding-actions,
+  .auth-inline-actions,
+  .journal-history-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    align-items: stretch;
+    justify-content: stretch;
+  }
+
+  .dashboard-grid,
+  .match-layout,
+  .match-results-grid,
+  .comparison-grid,
+  .decision-layout,
+  .decision-choice-grid,
+  .understanding-choice-grid,
+  .bias-layout,
+  .regret-layout,
+  .journal-history-layout,
+  .stories-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-filter-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .dashboard-filter-pill {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .button,
+  .button-link,
+  .auth-full-width-button,
+  .button-danger-compact {
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+  }
+
+  .decision-textarea,
+  .bias-textarea,
+  .stories-textarea {
+    min-height: 180px;
+  }
+
+  .screen-title {
+    font-size: clamp(1.6rem, 8vw, 2.1rem);
+    line-height: 1.15;
+  }
+
+  .screen-subtitle,
+  .dashboard-card-copy,
+  .journal-history-card-copy,
+  .story-result-copy,
+  .comparison-card-copy,
+  .understanding-summary-text,
+  .regret-intro-copy,
+  .bias-result-copy,
+  .decision-side-list,
+  .stories-section-copy,
+  .regret-guidance-copy,
+  .journal-detail-body-copy {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .dashboard-list-item,
+  .dashboard-list-link,
+  .story-result-card,
+  .profile-match-card,
+  .bias-result-card,
+  .journal-history-card,
+  .journal-detail-card {
+    padding: 16px;
+  }
+
+  .dashboard-decision-item {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .dashboard-decision-copy {
+    min-width: 0;
+  }
+
+  .match-count-pill,
+  .journal-status-pill,
+  .bias-result-confidence,
+  .journal-entry-meta-pill {
+    justify-self: start;
+  }
+
+  .comparison-score-row {
+    flex-wrap: wrap;
+  }
+
+  .journal-entry-meta-row,
+  .active-filters-panel,
+  .policy-links-row {
+    gap: 8px;
+  }
+
+  .stories-results-panel,
+  .understanding-panel,
+  .bias-results-panel,
+  .regret-warning-panel,
+  .policy-info-block,
+  .usage-purpose-block,
+  .comparison-summary-panel,
+  .journal-export-message {
+    margin-top: 18px;
+  }
+
+  .modal-backdrop {
+    padding: 14px;
+  }
+
+  .modal-copy {
+    font-size: 0.95rem;
+  }
+}
