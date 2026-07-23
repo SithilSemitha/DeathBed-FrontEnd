@@ -124,6 +124,10 @@ function DashboardRoute() {
   const [isLoadingJournals, setIsLoadingJournals] = useState<boolean>(true)
   const [journalLoadError, setJournalLoadError] = useState<string>('')
 
+  const [decisionToDelete, setDecisionToDelete] =
+    useState<DecisionHistoryItem | null>(null)
+  const [deleteNotice, setDeleteNotice] = useState<string>('')
+
   useEffect(() => {
     let isMounted = true
 
@@ -217,6 +221,26 @@ function DashboardRoute() {
     }
   }, [])
 
+  const openDeleteConfirmation = (decision: DecisionHistoryItem) => {
+    setDeleteNotice('')
+    setDecisionToDelete(decision)
+  }
+
+  const closeDeleteConfirmation = () => {
+    setDecisionToDelete(null)
+  }
+
+  const confirmDeleteDesignOnly = () => {
+    if (!decisionToDelete) {
+      return
+    }
+
+    setDeleteNotice(
+      `Delete confirmed for "${decisionToDelete.title}". Actual removal will be connected in the next subtask.`,
+    )
+    setDecisionToDelete(null)
+  }
+
   return (
     <section className="screen-shell">
       <div className="screen-backdrop" />
@@ -236,6 +260,12 @@ function DashboardRoute() {
             Start New Decision
           </Link>
         </div>
+
+        {deleteNotice ? (
+          <div className="status-banner status-banner-success">
+            {deleteNotice}
+          </div>
+        ) : null}
 
         <div className="dashboard-filter-bar">
           <button
@@ -306,7 +336,10 @@ function DashboardRoute() {
               {!isLoadingDecisions && !decisionLoadError ? (
                 <div className="dashboard-list">
                   {decisions.map((decision) => (
-                    <article key={decision.id} className="dashboard-list-item dashboard-decision-item">
+                    <article
+                      key={decision.id}
+                      className="dashboard-list-item dashboard-decision-item"
+                    >
                       <div className="dashboard-decision-copy">
                         <strong>{decision.title}</strong>
                         <span>
@@ -317,6 +350,7 @@ function DashboardRoute() {
                       <button
                         type="button"
                         className="button button-danger button-danger-compact"
+                        onClick={() => openDeleteConfirmation(decision)}
                       >
                         Delete
                       </button>
@@ -406,6 +440,39 @@ function DashboardRoute() {
             </section>
           )}
         </div>
+
+        {decisionToDelete ? (
+          <div className="modal-backdrop">
+            <div className="modal-card">
+              <p className="step-label">Delete Decision</p>
+              <h2 className="modal-title">Confirm deletion</h2>
+              <p className="modal-copy">
+                Are you sure you want to delete{' '}
+                <strong>{decisionToDelete.title}</strong>? This is currently a
+                frontend confirmation preview. Actual deletion will be added in
+                the next subtask.
+              </p>
+
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="button button-secondary"
+                  onClick={closeDeleteConfirmation}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  className="button button-danger"
+                  onClick={confirmDeleteDesignOnly}
+                >
+                  Confirm Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </section>
   )
