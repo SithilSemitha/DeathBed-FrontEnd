@@ -109,6 +109,19 @@ function fetchMockJournalLinks(): Promise<JournalLinkItem[]> {
   })
 }
 
+function triggerMockDeleteRequest(decisionId: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    window.setTimeout(() => {
+      if (decisionId === 'decision-error-demo') {
+        reject(new Error('Could not delete the decision right now. Please try again.'))
+        return
+      }
+
+      resolve()
+    }, 900)
+  })
+}
+
 function DashboardRoute() {
   const [activeView, setActiveView] = useState<DashboardView>('all')
 
@@ -127,6 +140,8 @@ function DashboardRoute() {
   const [decisionToDelete, setDecisionToDelete] =
     useState<DecisionHistoryItem | null>(null)
   const [deleteNotice, setDeleteNotice] = useState<string>('')
+  const [deleteRequestError, setDeleteRequestError] = useState<string>('')
+  const [isDeletingDecision, setIsDeletingDecision] = useState<boolean>(false)
 
   useEffect(() => {
     let isMounted = true
@@ -223,22 +238,44 @@ function DashboardRoute() {
 
   const openDeleteConfirmation = (decision: DecisionHistoryItem) => {
     setDeleteNotice('')
+    setDeleteRequestError('')
     setDecisionToDelete(decision)
   }
 
   const closeDeleteConfirmation = () => {
+    if (isDeletingDecision) {
+      return
+    }
+
     setDecisionToDelete(null)
+    setDeleteRequestError('')
   }
 
-  const confirmDeleteDesignOnly = () => {
+  const confirmDeleteRequest = async () => {
     if (!decisionToDelete) {
       return
     }
 
-    setDeleteNotice(
-      `Delete confirmed for "${decisionToDelete.title}". Actual removal will be connected in the next subtask.`,
-    )
-    setDecisionToDelete(null)
+    setDeleteRequestError('')
+    setDeleteNotice('')
+    setIsDeletingDecision(true)
+
+    try {
+      await triggerMockDeleteRequest(decisionToDelete.id)
+
+      setDeleteNotice(
+        `Delete request submitted for "${decisionToDelete.title}". Actual removal will be handled in the next subtask.`,
+      )
+      setDecisionToDelete(null)
+    } catch (error) {
+      setDeleteRequestError(
+        error instanceof Error
+          ? error.message
+          : 'Could not delete the decision right now. Please try again.',
+      )
+    } finally {
+      setIsDeletingDecision(false)
+    }
   }
 
   return (
@@ -448,16 +485,23 @@ function DashboardRoute() {
               <h2 className="modal-title">Confirm deletion</h2>
               <p className="modal-copy">
                 Are you sure you want to delete{' '}
-                <strong>{decisionToDelete.title}</strong>? This is currently a
-                frontend confirmation preview. Actual deletion will be added in
+                <strong>{decisionToDelete.title}</strong>? This request will be
+                submitted now, but the actual dashboard removal will happen in
                 the next subtask.
               </p>
+
+              {deleteRequestError ? (
+                <div className="status-banner status-banner-error">
+                  {deleteRequestError}
+                </div>
+              ) : null}
 
               <div className="modal-actions">
                 <button
                   type="button"
                   className="button button-secondary"
                   onClick={closeDeleteConfirmation}
+                  disabled={isDeletingDecision}
                 >
                   Cancel
                 </button>
@@ -465,9 +509,10 @@ function DashboardRoute() {
                 <button
                   type="button"
                   className="button button-danger"
-                  onClick={confirmDeleteDesignOnly}
+                  onClick={confirmDeleteRequest}
+                  disabled={isDeletingDecision}
                 >
-                  Confirm Delete
+                  {isDeletingDecision ? 'Deleting...' : 'Confirm Delete'}
                 </button>
               </div>
             </div>
